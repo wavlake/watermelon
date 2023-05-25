@@ -35,20 +35,16 @@ class Profile with ChangeNotifier {
     var privateHex = _keyGenerator.generatePrivateKey();
     var publicHex =  _keyGenerator.getPublicKey(privateHex);
     var nsecKey = _nip19.nsecEncode(privateHex);
-    var npubKey = _nip19.npubEncode(publicHex);
+    // var npubKey = _nip19.npubEncode(publicHex);
 
-    uiMessage.add("Private Key generated: $nsecKey");
-    uiMessage.add("Public key derived from: $npubKey");
-    uiMessage.add("private key hex derived from: $privateHex");
-    uiMessage.add("Public key hex derived from: $publicHex");
+    privateHexKey = privateHex;
+    publicHexKey = publicHex;
+    nsecController.text = nsecKey;
+
     notifyListeners();
   }
   void submitUserNsec() {
-    var privateHex = _nip19.decode(nsecController.text);
-    var publicHex = _keyGenerator.getPublicKey(privateHex['data']);
-    uiMessage.add("submitting nsec ${privateHex['data']}");
-    uiMessage.add("submitting npub $publicHex");
-
+    saveNsecSecret(privateHexKey: privateHexKey);
     notifyListeners();
   }
 
@@ -65,16 +61,11 @@ class Profile with ChangeNotifier {
     print(items.map((e) => e.value));
   }
 
-  Future<void> addSecret() async {
-    int index = items.length;
-    String key = "testKey $index";
-    String value = "testValue $index";
-
-    print(_getIOSOptions().toMap());
-    print(_getAndroidOptions().toMap());
+  Future<void> saveNsecSecret({ privateHexKey = String}) async {
+    const key = "key|privateHexKey";
     await _storage.write(
       key: key,
-      value: value,
+      value: privateHexKey,
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
     );

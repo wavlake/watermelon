@@ -79,28 +79,24 @@ class KeyEntryScreen extends StatelessWidget {
                                 );
                               }
                             },
-                            child: const Text('Submit'),
+                            child: const Text('SaveSecret'),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           ElevatedButton(
                             onPressed: appState.generateNewNsec,
-                            child: const Text('Create new account'),
+                            child: const Text('Generate new key'),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           ElevatedButton(
                             onPressed: appState.clearUiMessage,
                             child: const Text('Clear log'),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
-                          ),
-                          ElevatedButton(
-                            onPressed: appState.addSecret,
-                            child: const Text('SaveSecret'),
                           ),
                         ]),
                   ),
