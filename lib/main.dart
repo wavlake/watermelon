@@ -26,17 +26,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'dispute',
-      home: MyHomePage(),
+      home: _MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class _MyHomePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<_MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<_MyHomePage> {
   var selectedIndex = 0;
 
   @override
@@ -46,16 +46,16 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = KeyEntryScreen();
+        page = const KeyEntryScreen();
         break;
       case 1:
-        page = ScannerScreen();
+        page = const ScannerScreen();
         break;
       case 2:
-        page = ConfrimScreen();
+        page = const ConfrimScreen();
         break;
       case 3:
-        page = Placeholder();
+        page = const Placeholder();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(child: mainArea),
                 SafeArea(
                   child: BottomNavigationBar(
-                    items: [
+                    items: const [
                       BottomNavigationBarItem(
                         icon: Icon(Icons.home),
                         label: 'Key Entry',
@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 SafeArea(
                   child: NavigationRail(
                     extended: constraints.maxWidth >= 600,
-                    destinations: [
+                    destinations: const [
                       NavigationRailDestination(
                         icon: Icon(Icons.home),
                         label: Text('Key Entry'),

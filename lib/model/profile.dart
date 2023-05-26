@@ -6,8 +6,9 @@ final _keyGenerator = KeyApi();
 final _nip19 = Nip19();
 
 const _storage = FlutterSecureStorage();
+const storageKeyPrivateHex = "key|privateHexKey";
 
-IOSOptions _getIOSOptions() => IOSOptions(
+IOSOptions _getIOSOptions() => const IOSOptions(
     accountName: "flutter_secure_storage_service",
   );
 
@@ -23,32 +24,59 @@ class Profile with ChangeNotifier {
   String publicHexKey = "";
   final formKey = GlobalKey<FormState>();
 
-  final List<String> uiMessage = [];
+  List<SecItem> secrets = [];
+  List<String> nsecs = [];
   List<SecItem> items = List<SecItem>.empty(growable: true);
 
   TextEditingController nsecController = TextEditingController();
-  void clearUiMessage() {
-    uiMessage.clear();
-    notifyListeners();
-  }
+
   void generateNewNsec() {
-    var privateHex = _keyGenerator.generatePrivateKey();
-    var publicHex =  _keyGenerator.getPublicKey(privateHex);
-    var nsecKey = _nip19.nsecEncode(privateHex);
+    privateHexKey = _keyGenerator.generatePrivateKey();
+    publicHexKey =  _keyGenerator.getPublicKey(privateHexKey);
+    var nsecKey = _nip19.nsecEncode(privateHexKey);
     // var npubKey = _nip19.npubEncode(publicHex);
 
-    privateHexKey = privateHex;
-    publicHexKey = publicHex;
     nsecController.text = nsecKey;
 
     notifyListeners();
   }
-  void submitUserNsec() {
-    saveNsecSecret(privateHexKey: privateHexKey);
+  Future<void> savePrivateHex() async {
+    if (storageKeyPrivateHex.isEmpty) return;
+
+    var existingKeys = await readSecrets(filter: storageKeyPrivateHex);
+    var keyAlreadyStored = false; // check to see if the key is already stored
+    if (keyAlreadyStored) return;
+    var key = "$storageKeyPrivateHex|${existingKeys.length + 1}";
+
+    await writeSecret(
+      key: key,
+      value: privateHexKey,
+    );
+
     notifyListeners();
   }
 
-  Future<void> readSecrets() async {
+  Future<void> getStoredNsecs() async {
+    var storedHexKeys = secrets.where((element) => element.key.contains(storageKeyPrivateHex));
+    nsecs = storedHexKeys
+      .map((key) => _nip19.nsecEncode(key.value))
+      .toList(growable: false);
+
+    notifyListeners();
+  }
+
+  Future<void> writeSecret({ key = String, value = String}) async {
+    await _storage.write(
+      key: key,
+      value: value,
+      iOptions: _getIOSOptions(),
+      aOptions: _getAndroidOptions(),
+    );
+    // update the app state secrets
+    secrets = await readSecrets();
+  }
+
+  Future<List<SecItem>> readSecrets({ String filter = "" }) async {
     final all = await _storage.readAll(
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
@@ -56,20 +84,14 @@ class Profile with ChangeNotifier {
     items = all.entries
       .map((entry) => SecItem(entry.key, entry.value))
       .toList(growable: false);
-    print(items.length);
-    print(items.map((e) => e.key));
-    print(items.map((e) => e.value));
-  }
 
-  Future<void> saveNsecSecret({ privateHexKey = String}) async {
-    const key = "key|privateHexKey";
-    await _storage.write(
-      key: key,
-      value: privateHexKey,
-      iOptions: _getIOSOptions(),
-      aOptions: _getAndroidOptions(),
-    );
-    readSecrets();
+    if (filter == "") {
+      return items;
+    }
+  
+    return items
+      .where((element) => element.key.contains(filter))
+      .toList(growable: false);
   }
 }
 

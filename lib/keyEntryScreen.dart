@@ -70,7 +70,7 @@ class KeyEntryScreen extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () {
                               if (appState.formKey.currentState!.validate()) {
-                                appState.submitUserNsec();
+                                appState.savePrivateHex();
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -88,19 +88,19 @@ class KeyEntryScreen extends StatelessWidget {
                             onPressed: appState.generateNewNsec,
                             child: const Text('Generate new key'),
                           ),
+                          ElevatedButton(
+                            onPressed: appState.getStoredNsecs,
+                            child: const Text('Update Nsecs'),
+                          ),
                           const SizedBox(
                             width: 20,
-                          ),
-                          ElevatedButton(
-                            onPressed: appState.clearUiMessage,
-                            child: const Text('Clear log'),
                           ),
                           const SizedBox(
                             width: 20,
                           ),
                         ]),
                   ),
-                  getTextWidgets(appState.uiMessage),
+                  getTextWidgets(appState.nsecs),
                 ],
               ))),
     );
@@ -111,7 +111,7 @@ class KeyEntryScreen extends StatelessWidget {
   {
     List<Widget> list = List<Widget>.empty(growable: true);
     for(var i = 0; i < strings.length; i++){
-      list.add(Text(strings[i]));
+      list.add(Text(strings[i].substring(0,12)));
     }
     return Column(children: list);
   }
