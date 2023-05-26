@@ -40,23 +40,32 @@ class Profile with ChangeNotifier {
 
     notifyListeners();
   }
+
+  String generateStorageKey(int index) {
+    return "$storageKeyPrivateHex|$index";
+  }
+
   Future<void> savePrivateHex() async {
     if (storageKeyPrivateHex.isEmpty) return;
 
     var existingKeys = await readSecrets(filter: storageKeyPrivateHex);
     var keyAlreadyStored = false; // check to see if the key is already stored
     if (keyAlreadyStored) return;
-    var key = "$storageKeyPrivateHex|${existingKeys.length + 1}";
+
+    var key = generateStorageKey(existingKeys.length + 1);
 
     await writeSecret(
       key: key,
       value: privateHexKey,
     );
 
+    secrets = await readSecrets();
+    getStoredNsecs();
     notifyListeners();
   }
 
   Future<void> getStoredNsecs() async {
+    secrets = await readSecrets();
     var storedHexKeys = secrets.where((element) => element.key.contains(storageKeyPrivateHex));
     nsecs = storedHexKeys
       .map((key) => _nip19.nsecEncode(key.value))
@@ -64,6 +73,24 @@ class Profile with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> deleteKey(int index) async {
+    print("delete $index");
+    var keyToDelete = generateStorageKey(index);
+    await _storage.delete(
+      key: keyToDelete,
+      iOptions: _getIOSOptions(),
+      aOptions: _getAndroidOptions(),
+    );
+
+    // update the app state secrets
+    secrets = await readSecrets();
+    getStoredNsecs();
+  }
+
+  // Future<void> deleteSecret(String key) {
+
+  // }
 
   Future<void> writeSecret({ key = String, value = String}) async {
     await _storage.write(
@@ -88,10 +115,20 @@ class Profile with ChangeNotifier {
     if (filter == "") {
       return items;
     }
-  
+
     return items
       .where((element) => element.key.contains(filter))
       .toList(growable: false);
+  }
+
+  Future<void> deleteAllSecrets() async {
+    await _storage.deleteAll(
+      iOptions: _getIOSOptions(),
+      aOptions: _getAndroidOptions(),
+    );
+    secrets = await readSecrets();
+    getStoredNsecs();
+    notifyListeners();
   }
 }
 

@@ -92,6 +92,10 @@ class KeyEntryScreen extends StatelessWidget {
                             onPressed: appState.getStoredNsecs,
                             child: const Text('Update Nsecs'),
                           ),
+                          ElevatedButton(
+                            onPressed: appState.deleteAllSecrets,
+                            child: const Text('Delete all secrets'),
+                          ),
                           const SizedBox(
                             width: 20,
                           ),
@@ -100,18 +104,29 @@ class KeyEntryScreen extends StatelessWidget {
                           ),
                         ]),
                   ),
-                  getTextWidgets(appState.nsecs),
+                  getTextWidgets(appState.nsecs, appState.deleteKey),
                 ],
               ))),
     );
   }
 }
 
-  Widget getTextWidgets(List<String> strings)
+  Widget getTextWidgets(List<String> strings, deleteKey)
   {
     List<Widget> list = List<Widget>.empty(growable: true);
     for(var i = 0; i < strings.length; i++){
-      list.add(Text(strings[i].substring(0,12)));
+      var nsec = strings[i];
+      list.add(
+        Row(
+          children: [
+            Text(nsec.substring(0,12)),
+            ElevatedButton(
+              onPressed: () => deleteKey(i),
+              child: const Text('Delete'),
+            ),
+          ]
+        )
+      );
     }
     return Column(children: list);
   }
