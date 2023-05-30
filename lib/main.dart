@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'confirmScreen.dart';
-import 'keyEntryScreen.dart';
+import 'confirm_screen.dart';
+import 'key_entry_screen.dart';
 import 'model/profile.dart';
-import 'scannerScreen.dart';
+import 'scanner_screen.dart';
 
 void main() {
   runApp(
@@ -66,7 +66,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     var mainArea = ColoredBox(
       color: colorScheme.surfaceVariant,
       child: AnimatedSwitcher(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         child: page,
       ),
     );

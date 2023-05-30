@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 
 import 'model/profile.dart';
@@ -14,10 +13,10 @@ class ScannerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
       appBar: AppBar(
-        title: Text('Wavlake'),
+        title: const Text('Wavlake'),
         backgroundColor: Colors.green.shade300,
       ),
-      body: Text("testing"),
+      body: const Text("testing"),
     );
   }
 }

@@ -11,52 +11,42 @@ class KeyEntryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<Profile>();
+    // TextEditingController nsecController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
       appBar: AppBar(
-        title: Text('Wavlake'),
+        title: const Text('Wavlake'),
         backgroundColor: Colors.green.shade300,
       ),
       body: Form(
-          key: appState.formKey,
-          child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Column(
+        key: appState.formKey,
+        child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                       "Welcome to wavlake, if you already have a nostr key, please enter it below, otherwise, please click on the button below to generate a new key"),
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                     child: TextFormField(
                       controller: appState.nsecController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(), labelText: "nsec"),
+                      decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: "nsec",
+                          suffixIcon: IconButton(
+                            onPressed: appState.nsecController.clear,
+                            icon: const Icon(Icons.clear),
+                          ),
+                        ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your nsec';
                         }
 
-                        bool validatePrivateHexKey (String value) {
-                          try {
-                            final nip19 = Nip19();
-                            var privateHexKey = nip19.decode(value);
-                            print(privateHexKey);
-                            if (privateHexKey['type'] != 'nsec') {
-                              print('Invalid nsec type');
-                              return false;
-                            }
-                            return true;
-                          } catch (e) {
-                            print('Invalid nsec catch $e');
-                            return false;
-                          }
-                        }
-                        if (!validatePrivateHexKey(value) && value.length != 64) {
-                          return 'Please enter a valid nsec';
-                        }
+                        if (!appState.isValidNsec(value)) return 'Please enter a valid nsec';
                         return null;
                       },
                     ),
@@ -79,22 +69,22 @@ class KeyEntryScreen extends StatelessWidget {
                                 );
                               }
                             },
-                            child: const Text('SaveSecret'),
+                            child: const Text('Save Nsec'),
                           ),
                           const SizedBox(
                             width: 20,
                           ),
                           ElevatedButton(
                             onPressed: appState.generateNewNsec,
-                            child: const Text('Generate new key'),
+                            child: const Text('Generate new nsec'),
                           ),
                           ElevatedButton(
-                            onPressed: appState.getStoredNsecs,
-                            child: const Text('Update Nsecs'),
+                            onPressed: appState.readPrivateHex,
+                            child: const Text('Read saved nsec'),
                           ),
                           ElevatedButton(
-                            onPressed: appState.deleteAllSecrets,
-                            child: const Text('Delete all secrets'),
+                            onPressed: appState.deletePrivateHex,
+                            child: const Text('Delete saved nsec'),
                           ),
                           const SizedBox(
                             width: 20,
@@ -104,7 +94,6 @@ class KeyEntryScreen extends StatelessWidget {
                           ),
                         ]),
                   ),
-                  getTextWidgets(appState.nsecs, appState.deleteKey),
                 ],
               ))),
     );
