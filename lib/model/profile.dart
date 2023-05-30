@@ -24,12 +24,17 @@ class Profile with ChangeNotifier {
 
   // a getter that transforms the privateHex to publicHex
   String get publicHexKey {
-    return _keyGenerator.getPublicKey(privateHexKey);
+    return _nip19.npubEncode(privateHexKey);
   }
 
   // a getter that transforms the privateHex to npub
-  String get nPubKey {
+  String get npubKey {
     return _nip19.npubEncode(privateHexKey);
+  }
+
+  // a getter that transforms the privateHex to nsec
+  String get nsecKey {
+    return _nip19.nsecEncode(privateHexKey);
   }
   
   final formKey = GlobalKey<FormState>();
@@ -39,8 +44,6 @@ class Profile with ChangeNotifier {
 
   void generateNewNsec() {
     privateHexKey = _keyGenerator.generatePrivateKey();
-    var nsecKey = _nip19.nsecEncode(privateHexKey);
-
     nsecController.text = nsecKey;
     notifyListeners();
   }
@@ -62,9 +65,9 @@ class Profile with ChangeNotifier {
     var savedHexKey = await _readSecretKey();
     if (savedHexKey == null) return;
   
-    // convert the key and save to local state
-    var nsecKey = _nip19.nsecEncode(savedHexKey);
+    // save to local state
     privateHexKey = savedHexKey;
+    // update text field
     nsecController.text = nsecKey;
 
     notifyListeners();
