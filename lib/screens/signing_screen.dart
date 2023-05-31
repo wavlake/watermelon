@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../model/profile.dart';
 
-class ScannerScreen extends StatelessWidget {
- const ScannerScreen({super.key});
+class SigningScreen extends StatelessWidget {
+  const SigningScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,34 @@ class ScannerScreen extends StatelessWidget {
         title: const Text('Wavlake'),
         backgroundColor: Colors.green.shade300,
       ),
-      body: Text(appState.relay),
+      body: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("Welcome to the scanner"),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: Text("some text here"),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: null,
+                      child: Text('Generate new nsec'),
+                    ),
+                    ElevatedButton(
+                      onPressed: null,
+                      child: Text('Read saved nsec'),
+                    ),
+                  ]),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../model/profile.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class ScannerScreen extends StatelessWidget {
- const ScannerScreen({super.key});
+  const ScannerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<Profile>();
-
     return Scaffold(
-      backgroundColor: Colors.pink.shade100,
       appBar: AppBar(
-        title: const Text('Wavlake'),
-        backgroundColor: Colors.green.shade300,
+        title: const Text('Mobile Scanner'),
       ),
-      body: Text(appState.privateHexKey),
+      body: MobileScanner(
+        // fit: BoxFit.contain,
+        controller: MobileScannerController(
+          detectionSpeed: DetectionSpeed.normal,
+          facing: CameraFacing.back,
+          torchEnabled: false,
+        ),
+        onDetect: (capture) {
+          final List<Barcode> barcodes = capture.barcodes;
+          for (final barcode in barcodes) {
+            debugPrint('Barcode found! ${barcode.rawValue}');
+          }
+        },
+      ),
     );
   }
 }

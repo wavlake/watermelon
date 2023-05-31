@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/confirm_screen.dart';
+import 'screens/signing_screen.dart';
 import 'screens/key_entry_screen.dart';
 import 'model/profile.dart';
 import 'screens/scanner_screen.dart';
@@ -49,13 +49,10 @@ class _MyHomePageState extends State<_MyHomePage> {
         page = const KeyEntryScreen();
         break;
       case 1:
-        page = const ScannerScreen();
+        page = ScannerScreen();
         break;
       case 2:
-        page = const ConfrimScreen();
-        break;
-      case 3:
-        page = const Placeholder();
+        page = const SigningScreen();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
