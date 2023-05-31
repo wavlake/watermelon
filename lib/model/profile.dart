@@ -21,30 +21,40 @@ AndroidOptions _getAndroidOptions() => const AndroidOptions(
 class Profile with ChangeNotifier {
   String relay = "wss://relay.wavlake.com";
   String privateHexKey = "";
+  TextEditingController nsecController = TextEditingController();
 
   // a getter that transforms the privateHex to publicHex
   String get publicHexKey {
+    if(privateHexKey == "") return "";
     return _nip19.npubEncode(privateHexKey);
   }
 
   // a getter that transforms the privateHex to npub
   String get npubKey {
+    if(privateHexKey == "") return "";
     return _nip19.npubEncode(privateHexKey);
   }
 
   // a getter that transforms the privateHex to nsec
   String get nsecKey {
+    if(privateHexKey == "") return "";
     return _nip19.nsecEncode(privateHexKey);
   }
   
   final formKey = GlobalKey<FormState>();
 
-  TextEditingController nsecController = TextEditingController();
+  // TextEditingController nsecController = TextEditingController();
 
 
   void generateNewNsec() {
     privateHexKey = _keyGenerator.generatePrivateKey();
     nsecController.text = nsecKey;
+    notifyListeners();
+  }
+
+  void clearNsecField() {
+    privateHexKey = "";
+    nsecController.text = "";
     notifyListeners();
   }
 
@@ -63,13 +73,13 @@ class Profile with ChangeNotifier {
   Future<void> readPrivateHex() async {
     // read the key
     var savedHexKey = await _readSecretKey();
-    if (savedHexKey == null) return;
-  
-    // save to local state
-    privateHexKey = savedHexKey;
-    // update text field
-    nsecController.text = nsecKey;
 
+    // if no key in storage, bail
+    if (savedHexKey == null) return;
+
+    // else save it and update the text input to display the nsec
+    privateHexKey = savedHexKey;
+    nsecController.text = nsecKey;
     notifyListeners();
   }
 
@@ -116,7 +126,7 @@ class Profile with ChangeNotifier {
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
     );
-    
+
     // return the saved private key, or null if not found
     return privateKey;
   }

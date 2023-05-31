@@ -11,7 +11,6 @@ class KeyEntryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<Profile>();
-    // TextEditingController nsecController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
@@ -64,8 +63,9 @@ class KeyEntryScreen extends StatelessWidget {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content:
-                                          Text('Error submitting your nsec')),
+                                    content:
+                                      Text('Error submitting your nsec')
+                                  ),
                                 );
                               }
                             },
@@ -75,7 +75,11 @@ class KeyEntryScreen extends StatelessWidget {
                             width: 20,
                           ),
                           ElevatedButton(
-                            onPressed: appState.generateNewNsec,
+                            onPressed: () {
+                              appState.generateNewNsec();
+                              print(appState.nsecKey);
+                              appState.nsecController.text = appState.nsecKey;
+                            },
                             child: const Text('Generate new nsec'),
                           ),
                           ElevatedButton(
