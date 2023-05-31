@@ -37,7 +37,7 @@ class KeyEntryScreen extends StatelessWidget {
                           border: const OutlineInputBorder(),
                           labelText: "nsec",
                           suffixIcon: IconButton(
-                            onPressed: appState.nsecController.clear,
+                            onPressed: appState.clearNsecField,
                             icon: const Icon(Icons.clear),
                           ),
                         ),

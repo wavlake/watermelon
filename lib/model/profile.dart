@@ -26,13 +26,14 @@ class Profile with ChangeNotifier {
   // a getter that transforms the privateHex to publicHex
   String get publicHexKey {
     if(privateHexKey == "") return "";
-    return _nip19.npubEncode(privateHexKey);
+    return _keyGenerator.getPublicKey(privateHexKey);
   }
 
   // a getter that transforms the privateHex to npub
   String get npubKey {
     if(privateHexKey == "") return "";
-    return _nip19.npubEncode(privateHexKey);
+    var publicHexKey = _keyGenerator.getPublicKey(privateHexKey);
+    return _nip19.npubEncode(publicHexKey);
   }
 
   // a getter that transforms the privateHex to nsec
@@ -59,6 +60,7 @@ class Profile with ChangeNotifier {
   }
 
   Future<void> savePrivateHex() async {
+    privateHexKey = _nip19.decode(nsecController.text)['data'];
     await _writeSecretKey(value: privateHexKey);
 
     notifyListeners();
