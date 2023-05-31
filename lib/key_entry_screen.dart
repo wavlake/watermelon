@@ -11,6 +11,7 @@ class KeyEntryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<Profile>();
+    var abbreviatedNpub = appState.npubKey.length > 12 ? appState.npubKey.substring(0,12) : "";
 
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
@@ -75,11 +76,7 @@ class KeyEntryScreen extends StatelessWidget {
                             width: 20,
                           ),
                           ElevatedButton(
-                            onPressed: () {
-                              appState.generateNewNsec();
-                              print(appState.nsecKey);
-                              appState.nsecController.text = appState.nsecKey;
-                            },
+                            onPressed: appState.generateNewNsec,
                             child: const Text('Generate new nsec'),
                           ),
                           ElevatedButton(
@@ -90,12 +87,8 @@ class KeyEntryScreen extends StatelessWidget {
                             onPressed: appState.deletePrivateHex,
                             child: const Text('Delete saved nsec'),
                           ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
+                          // if there is an npub, show it
+                          if (abbreviatedNpub != "") Text("npub: $abbreviatedNpub"),
                         ]),
                   ),
                 ],
