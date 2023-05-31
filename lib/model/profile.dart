@@ -44,9 +44,6 @@ class Profile with ChangeNotifier {
   
   final formKey = GlobalKey<FormState>();
 
-  // TextEditingController nsecController = TextEditingController();
-
-
   void generateNewNsec() {
     privateHexKey = _keyGenerator.generatePrivateKey();
     nsecController.text = nsecKey;
