@@ -11,7 +11,6 @@ class KeyEntryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<Profile>();
-    var abbreviatedNpub = appState.npubKey.length > 12 ? appState.npubKey.substring(0,12) : "";
 
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
@@ -88,7 +87,10 @@ class KeyEntryScreen extends StatelessWidget {
                             child: const Text('Delete saved nsec'),
                           ),
                           // if there is an npub, show it
-                          if (abbreviatedNpub != "") Text("npub: $abbreviatedNpub"),
+                          NpubTextWidget(
+                            appState.npubKey,
+                            key: const Key('npub'),
+                          ), 
                         ]),
                   ),
                 ],
@@ -116,3 +118,18 @@ class KeyEntryScreen extends StatelessWidget {
     }
     return Column(children: list);
   }
+
+// a Text widget that returns an npub or nothing if null
+class NpubTextWidget extends StatelessWidget {
+  final String text;
+  const NpubTextWidget(this.text, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (text != "" && text.isNotEmpty) return Text(text);
+
+    // if no npub, return "nothing"
+    // https://stackoverflow.com/questions/53455358/how-to-present-an-empty-view-in-flutter
+    return const SizedBox.shrink();
+  }
+}
