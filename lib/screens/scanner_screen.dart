@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'model/profile.dart';
+import '../model/profile.dart';
 
 class ScannerScreen extends StatelessWidget {
  const ScannerScreen({super.key});
@@ -16,7 +16,7 @@ class ScannerScreen extends StatelessWidget {
         title: const Text('Wavlake'),
         backgroundColor: Colors.green.shade300,
       ),
-      body: const Text("testing"),
+      body: Text(appState.privateHexKey),
     );
   }
 }

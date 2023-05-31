@@ -65,7 +65,7 @@ class Profile with ChangeNotifier {
 
   Future<void> deletePrivateHex() async {
     await _deleteSecretKey();
-
+    clearNsecField();
     notifyListeners();
   }
 

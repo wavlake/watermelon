@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:nostr_tools/nostr_tools.dart';
 
-import 'model/profile.dart';
+import '../model/profile.dart';
 
 
 class KeyEntryScreen extends StatelessWidget {

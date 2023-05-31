@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'confirm_screen.dart';
-import 'key_entry_screen.dart';
+import 'screens/confirm_screen.dart';
+import 'screens/key_entry_screen.dart';
 import 'model/profile.dart';
-import 'scanner_screen.dart';
+import 'screens/scanner_screen.dart';
 
 void main() {
   runApp(
