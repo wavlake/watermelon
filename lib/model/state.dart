@@ -20,53 +20,55 @@ AndroidOptions _getAndroidOptions() => const AndroidOptions(
 
 class AppState with ChangeNotifier {
   String relay = "wss://relay.wavlake.com";
-  String privateHexKey = "";
+  String insecurePrivateHex = "";
   int currentScreen = 0;
   TextEditingController nsecController = TextEditingController();
 
   // a getter that transforms the privateHex to publicHex
   String get publicHexKey {
-    if (privateHexKey == "") return "";
-    return _keyGenerator.getPublicKey(privateHexKey);
+    if (insecurePrivateHex == "") return "";
+    return _keyGenerator.getPublicKey(insecurePrivateHex);
   }
 
   // a getter that transforms the privateHex to npub
   String get npubKey {
-    if (privateHexKey == "") return "";
-    var publicHexKey = _keyGenerator.getPublicKey(privateHexKey);
+    if (insecurePrivateHex == "") return "";
+    var publicHexKey = _keyGenerator.getPublicKey(insecurePrivateHex);
     return _nip19.npubEncode(publicHexKey);
   }
 
   // a getter that transforms the privateHex to nsec
   String get nsecKey {
-    if (privateHexKey == "") return "";
-    return _nip19.nsecEncode(privateHexKey);
+    if (insecurePrivateHex == "") return "";
+    return _nip19.nsecEncode(insecurePrivateHex);
   }
 
   final formKey = GlobalKey<FormState>();
 
   void navigate(int index) {
     currentScreen = index;
-    print(currentScreen);
 
     notifyListeners();
   }
 
   void generateNewNsec() {
-    privateHexKey = _keyGenerator.generatePrivateKey();
+    insecurePrivateHex = _keyGenerator.generatePrivateKey();
     nsecController.text = nsecKey;
     notifyListeners();
   }
 
   void clearNsecField() {
-    privateHexKey = "";
+    insecurePrivateHex = "";
     nsecController.text = "";
     notifyListeners();
   }
 
   Future<void> savePrivateHex() async {
-    privateHexKey = _nip19.decode(nsecController.text)['data'];
-    await _writeSecretKey(value: privateHexKey);
+    insecurePrivateHex = _nip19.decode(nsecController.text)['data'];
+    await _writeSecretKey(value: insecurePrivateHex);
+
+    // delete local state copies of secrets
+    clearNsecField();
     navigate(2);
 
     notifyListeners();
@@ -78,17 +80,9 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> readPrivateHex() async {
-    // read the key
-    var savedHexKey = await _readSecretKey();
-
-    // if no key in storage, bail
-    if (savedHexKey == null) return;
-
-    // else save it and update the text input to display the nsec
-    privateHexKey = savedHexKey;
-    nsecController.text = nsecKey;
-    notifyListeners();
+  Future<String?> readPrivateHex() async {
+    // read the key but dont store anywhere, since its a secret
+    return await _readSecretKey();
   }
 
   bool isValidNsec(String value) {
@@ -98,8 +92,8 @@ class AppState with ChangeNotifier {
         return false;
       }
       final nip19 = Nip19();
-      var privateHexKey = nip19.decode(value);
-      if (privateHexKey['type'] != 'nsec') {
+      var insecurePrivateHex = nip19.decode(value);
+      if (insecurePrivateHex['type'] != 'nsec') {
         return false;
       }
       return true;
