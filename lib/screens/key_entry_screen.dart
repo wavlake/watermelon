@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../model/profile.dart';
 
-
 class KeyEntryScreen extends StatelessWidget {
   const KeyEntryScreen({super.key});
 
@@ -18,105 +17,78 @@ class KeyEntryScreen extends StatelessWidget {
         backgroundColor: Colors.green.shade300,
       ),
       body: Form(
-        key: appState.formKey,
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+          key: appState.formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  TextButton(onPressed: null, child: Icon(Icons.arrow_back)),
+                  Text("Add New Account")
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
                       "Welcome to wavlake, if you already have a nostr key, please enter it below, otherwise, please click on the button below to generate a new key"),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    child: TextFormField(
-                      controller: appState.nsecController,
-                      decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          labelText: "nsec",
-                          suffixIcon: IconButton(
-                            onPressed: appState.clearNsecField,
-                            icon: const Icon(Icons.clear),
-                          ),
-                        ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your nsec';
-                        }
-
-                        if (!appState.isValidNsec(value)) return 'Please enter a valid nsec';
-                        return null;
-                      },
+                  TextFormField(
+                    controller: appState.nsecController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "nsec",
+                      suffixIcon: IconButton(
+                        onPressed: appState.clearNsecField,
+                        icon: const Icon(Icons.clear),
+                      ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Key is required';
+                      }
+                      if (!appState.isValidNsec(value)) {
+                        return 'Please enter a valid key';
+                      }
+
+                      return null;
+                    },
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 16.0),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              if (appState.formKey.currentState!.validate()) {
-                                appState.savePrivateHex();
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                      Text('Error submitting your nsec')
-                                  ),
-                                );
-                              }
-                            },
-                            child: const Text('Save Nsec'),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          ElevatedButton(
-                            onPressed: appState.generateNewNsec,
-                            child: const Text('Generate new nsec'),
-                          ),
-                          ElevatedButton(
-                            onPressed: appState.readPrivateHex,
-                            child: const Text('Read saved nsec'),
-                          ),
-                          ElevatedButton(
-                            onPressed: appState.deletePrivateHex,
-                            child: const Text('Delete saved nsec'),
-                          ),
-                          // if there is an npub, show it
-                          NpubTextWidget(
-                            appState.npubKey,
-                            key: const Key('npub'),
-                          ), 
-                        ]),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (appState.formKey.currentState!.validate()) {
+                        appState.savePrivateHex();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Invalid Key')),
+                        );
+                      }
+                    },
+                    child: const Text('Login'),
                   ),
                 ],
-              ))),
+              ),
+            ],
+          )),
     );
   }
 }
 
-  Widget getTextWidgets(List<String> strings, deleteKey)
-  {
-    List<Widget> list = List<Widget>.empty(growable: true);
-    for(var i = 0; i < strings.length; i++){
-      var nsec = strings[i];
-      list.add(
-        Row(
-          children: [
-            Text(nsec.substring(0,12)),
-            ElevatedButton(
-              onPressed: () => deleteKey(i),
-              child: const Text('Delete'),
-            ),
-          ]
-        )
-      );
-    }
-    return Column(children: list);
+Widget getTextWidgets(List<String> strings, deleteKey) {
+  List<Widget> list = List<Widget>.empty(growable: true);
+  for (var i = 0; i < strings.length; i++) {
+    var nsec = strings[i];
+    list.add(Row(children: [
+      Text(nsec.substring(0, 12)),
+      ElevatedButton(
+        onPressed: () => deleteKey(i),
+        child: const Text('Delete'),
+      ),
+    ]));
   }
+  return Column(children: list);
+}
 
 // a Text widget that returns an npub or nothing if null
 class NpubTextWidget extends StatelessWidget {

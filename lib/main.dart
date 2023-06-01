@@ -49,7 +49,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         page = const KeyEntryScreen();
         break;
       case 1:
-        page = ScannerScreen();
+        page = const ScannerScreen();
         break;
       case 2:
         page = const SigningScreen();
