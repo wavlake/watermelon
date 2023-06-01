@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../model/profile.dart';
+import '../model/state.dart';
 
 class SigningScreen extends StatelessWidget {
   const SigningScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<Profile>();
+    var appState = context.watch<AppState>();
 
     return Scaffold(
       backgroundColor: Colors.pink.shade100,

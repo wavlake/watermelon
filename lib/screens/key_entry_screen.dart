@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../model/profile.dart';
+import '../components.dart';
+import '../model/state.dart';
 
 class KeyEntryScreen extends StatelessWidget {
   const KeyEntryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<Profile>();
+    var appState = context.watch<AppState>();
 
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
@@ -22,52 +23,58 @@ class KeyEntryScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  TextButton(onPressed: null, child: Icon(Icons.arrow_back)),
-                  Text("Add New Account")
-                ],
+              TopBackButton(
+                appState: appState,
+                title: "Add an Account",
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                      "Welcome to wavlake, if you already have a nostr key, please enter it below, otherwise, please click on the button below to generate a new key"),
-                  TextFormField(
-                    controller: appState.nsecController,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: "nsec",
-                      suffixIcon: IconButton(
-                        onPressed: appState.clearNsecField,
-                        icon: const Icon(Icons.clear),
+              SizedBox(
+                height: 180,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                        "If you already have a nostr key, please enter it below, otherwise, please click on the button below to generate a new key"),
+                    TextFormField(
+                      controller: appState.nsecController,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: "nsec / hex private key",
+                        suffixIcon: IconButton(
+                          onPressed: appState.clearNsecField,
+                          icon: const Icon(Icons.remove_red_eye_outlined),
+                        ),
                       ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Key is required';
-                      }
-                      if (!appState.isValidNsec(value)) {
-                        return 'Please enter a valid key';
-                      }
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Key is required';
+                        }
+                        if (!appState.isValidNsec(value)) {
+                          return 'Please enter a valid key';
+                        }
 
-                      return null;
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (appState.formKey.currentState!.validate()) {
-                        appState.savePrivateHex();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Invalid Key')),
-                        );
-                      }
-                    },
-                    child: const Text('Login'),
-                  ),
-                ],
+                        return null;
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (appState.formKey.currentState!.validate()) {
+                          appState.savePrivateHex();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Invalid Key')),
+                          );
+                        }
+                      },
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: TextButton(
+                    onPressed: appState.generateNewNsec,
+                    child: const Text("Generate New Key")),
               ),
             ],
           )),

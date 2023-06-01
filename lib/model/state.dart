@@ -9,40 +9,48 @@ const _storage = FlutterSecureStorage();
 const storageKeyPrivateHex = "privateHexKey";
 
 IOSOptions _getIOSOptions() => const IOSOptions(
-    accountName: "flutter_secure_storage_service",
-  );
+      accountName: "flutter_secure_storage_service",
+    );
 
 AndroidOptions _getAndroidOptions() => const AndroidOptions(
-    encryptedSharedPreferences: true,
-    // sharedPreferencesName: 'Test2',
-    // preferencesKeyPrefix: 'Test'
-  );
+      encryptedSharedPreferences: true,
+      // sharedPreferencesName: 'Test2',
+      // preferencesKeyPrefix: 'Test'
+    );
 
-class Profile with ChangeNotifier {
+class AppState with ChangeNotifier {
   String relay = "wss://relay.wavlake.com";
   String privateHexKey = "";
+  int currentScreen = 0;
   TextEditingController nsecController = TextEditingController();
 
   // a getter that transforms the privateHex to publicHex
   String get publicHexKey {
-    if(privateHexKey == "") return "";
+    if (privateHexKey == "") return "";
     return _keyGenerator.getPublicKey(privateHexKey);
   }
 
   // a getter that transforms the privateHex to npub
   String get npubKey {
-    if(privateHexKey == "") return "";
+    if (privateHexKey == "") return "";
     var publicHexKey = _keyGenerator.getPublicKey(privateHexKey);
     return _nip19.npubEncode(publicHexKey);
   }
 
   // a getter that transforms the privateHex to nsec
   String get nsecKey {
-    if(privateHexKey == "") return "";
+    if (privateHexKey == "") return "";
     return _nip19.nsecEncode(privateHexKey);
   }
-  
+
   final formKey = GlobalKey<FormState>();
+
+  void navigate(int index) {
+    currentScreen = index;
+    print(currentScreen);
+
+    notifyListeners();
+  }
 
   void generateNewNsec() {
     privateHexKey = _keyGenerator.generatePrivateKey();
@@ -59,6 +67,7 @@ class Profile with ChangeNotifier {
   Future<void> savePrivateHex() async {
     privateHexKey = _nip19.decode(nsecController.text)['data'];
     await _writeSecretKey(value: privateHexKey);
+    navigate(2);
 
     notifyListeners();
   }
@@ -82,7 +91,7 @@ class Profile with ChangeNotifier {
     notifyListeners();
   }
 
-  bool isValidNsec (String value) {
+  bool isValidNsec(String value) {
     try {
       // nsec should be 63 chars
       if (value.length != 63) {
@@ -110,7 +119,7 @@ class Profile with ChangeNotifier {
     );
   }
 
-  Future<void> _writeSecretKey({ value = String }) async {
+  Future<void> _writeSecretKey({value = String}) async {
     await _storage.write(
       key: storageKeyPrivateHex,
       value: value,
