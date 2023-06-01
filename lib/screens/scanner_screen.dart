@@ -25,7 +25,6 @@ class ScannerScreen extends StatelessWidget {
           // its immediate parent needs to be something like SizedBox
           SizedBox(
             height: 400,
-            // child: Text("Scanner Screen"),
             child: MobileScanner(
               // fit: BoxFit.contain,
               controller: MobileScannerController(
