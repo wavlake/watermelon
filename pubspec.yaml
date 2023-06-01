@@ -42,6 +42,8 @@ dependencies:
   secp256k1: ^0.3.0
   flutter_secure_storage: ^8.0.0
   nostr_tools: ^1.0.7
+  # get_storage: ^2.1.1 # used for local storage that doesnt need to be secure
+  mobile_scanner: ^3.2.0
 
 dev_dependencies:
   flutter_test:

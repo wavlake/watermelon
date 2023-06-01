@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'confirmScreen.dart';
-import 'keyEntryScreen.dart';
+import 'screens/signing_screen.dart';
+import 'screens/key_entry_screen.dart';
 import 'model/profile.dart';
-import 'scannerScreen.dart';
+import 'screens/scanner_screen.dart';
 
 void main() {
   runApp(
@@ -49,13 +49,10 @@ class _MyHomePageState extends State<_MyHomePage> {
         page = const KeyEntryScreen();
         break;
       case 1:
-        page = const ScannerScreen();
+        page = ScannerScreen();
         break;
       case 2:
-        page = const ConfrimScreen();
-        break;
-      case 3:
-        page = const Placeholder();
+        page = const SigningScreen();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -66,7 +63,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     var mainArea = ColoredBox(
       color: colorScheme.surfaceVariant,
       child: AnimatedSwitcher(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         child: page,
       ),
     );
