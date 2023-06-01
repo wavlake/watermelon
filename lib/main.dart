@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/signing_screen.dart';
 import 'screens/key_entry_screen.dart';
-import 'model/profile.dart';
+import 'screens/welcome_screen.dart';
 import 'screens/scanner_screen.dart';
+import 'model/state.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => Profile(),
+          create: (context) => AppState(),
         ),
       ],
       child: const MyApp(),
@@ -37,25 +38,27 @@ class _MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<_MyHomePage> {
-  var selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     var colorScheme = Theme.of(context).colorScheme;
+    var appState = context.watch<AppState>();
 
     Widget page;
-    switch (selectedIndex) {
+    switch (appState.currentScreen) {
       case 0:
-        page = const KeyEntryScreen();
+        page = const WelcomeScreen();
         break;
       case 1:
-        page = ScannerScreen();
+        page = const KeyEntryScreen();
         break;
       case 2:
+        page = const ScannerScreen();
+        break;
+      case 3:
         page = const SigningScreen();
         break;
       default:
-        throw UnimplementedError('no widget for $selectedIndex');
+        throw UnimplementedError('no widget for $appState');
     }
 
     // The container for the current page, with its background color
@@ -71,70 +74,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 450) {
-            // Use a more mobile-friendly layout with BottomNavigationBar
-            // on narrow screens.
-            return Column(
-              children: [
-                Expanded(child: mainArea),
-                SafeArea(
-                  child: BottomNavigationBar(
-                    items: const [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.home),
-                        label: 'Key Entry',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.camera_alt),
-                        label: 'Scanner',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.check_sharp),
-                        label: 'Confirmation',
-                      ),
-                    ],
-                    currentIndex: selectedIndex,
-                    onTap: (value) {
-                      setState(() {
-                        selectedIndex = value;
-                      });
-                    },
-                  ),
-                )
-              ],
-            );
-          } else {
-            return Row(
-              children: [
-                SafeArea(
-                  child: NavigationRail(
-                    extended: constraints.maxWidth >= 600,
-                    destinations: const [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.home),
-                        label: Text('Key Entry'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.camera_alt),
-                        label: Text('Scanner'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.check_sharp),
-                        label: Text('Confirmation'),
-                      ),
-                    ],
-                    selectedIndex: selectedIndex,
-                    onDestinationSelected: (value) {
-                      setState(() {
-                        selectedIndex = value;
-                      });
-                    },
-                  ),
-                ),
-                Expanded(child: mainArea),
-              ],
-            );
-          }
+          return SafeArea(child: mainArea);
         },
       ),
     );
