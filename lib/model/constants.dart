@@ -1,1 +1,1 @@
-enum Screen { welcome, keyEntry, signing, scanner }
+enum Screen { welcome, userProfile, signing, scanner }

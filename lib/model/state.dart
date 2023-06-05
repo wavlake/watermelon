@@ -27,16 +27,24 @@ AndroidOptions _getAndroidOptions() => const AndroidOptions(
 class AppState with ChangeNotifier {
   // this runs when we call AppState() in main.dart in the ChangeNotifierProvider create method
   AppState() {
-    // initialize state
-    checkForSavedPrivateKey().then((_) => {
-          // if there is a saved private key, navigate to the signing screen
-          if (npub != "") navigate(Screen.signing)
-          // notifyListeners()
-        });
+    setInitialScreen();
   }
-  /////// Navigation
 
+  /// Navigation
   Screen currentScreen = Screen.welcome;
+
+  /// A method that sets the initial screen
+  void setInitialScreen() async {
+    // this will save the npub to state if the pk exists
+    await checkForSavedPrivateKey();
+
+    // if there is a saved private key, navigate to the signing screen
+    if (npub != "") navigate(Screen.signing);
+
+    var hasSeenWelcomeScreen = true; // store this boolean in unsecure storage
+
+    navigate(hasSeenWelcomeScreen ? Screen.userProfile : Screen.welcome);
+  }
 
   /// A method to navigate to a new screen
   void navigate(Screen newScreen) {

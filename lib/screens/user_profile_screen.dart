@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import '../components.dart';
 import '../model/state.dart';
 
-class KeyEntryScreen extends StatelessWidget {
-  const KeyEntryScreen({super.key});
+class UserProfileScreen extends StatelessWidget {
+  const UserProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

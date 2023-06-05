@@ -20,9 +20,7 @@ class SigningScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const TopBackButton(
-                title: "Back to Accounts",
-              ),
+              const UserProfile(),
               SizedBox(
                 height: 300,
                 child: Column(
@@ -54,7 +52,6 @@ class SigningScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const LoggedInAs(),
                   ],
                 ),
               ),

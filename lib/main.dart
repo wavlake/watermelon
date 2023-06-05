@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'model/constants.dart';
 import 'screens/signing_screen.dart';
-import 'screens/key_entry_screen.dart';
+import 'screens/user_profile_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'model/state.dart';
@@ -49,8 +49,8 @@ class _MyHomePageState extends State<_MyHomePage> {
       case Screen.welcome:
         page = const WelcomeScreen();
         break;
-      case Screen.keyEntry:
-        page = const KeyEntryScreen();
+      case Screen.userProfile:
+        page = const UserProfileScreen();
         break;
       case Screen.signing:
         page = const SigningScreen();

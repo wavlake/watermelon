@@ -7,8 +7,8 @@ import 'model/constants.dart';
 // Every screen gets a default back button target
 Map<Screen, Screen> backButtonMap = {
   Screen.welcome: Screen.welcome,
-  Screen.keyEntry: Screen.welcome,
-  Screen.signing: Screen.keyEntry,
+  Screen.userProfile: Screen.welcome,
+  Screen.signing: Screen.userProfile,
   Screen.scanner: Screen.signing,
 };
 
@@ -47,8 +47,8 @@ class TopBackButton extends StatelessWidget {
 }
 
 // a Text widget that returns an npub or nothing if null
-class LoggedInAs extends StatelessWidget {
-  const LoggedInAs({super.key});
+class UserProfile extends StatelessWidget {
+  const UserProfile({super.key});
 
   @override
   Widget build(BuildContext context) {
