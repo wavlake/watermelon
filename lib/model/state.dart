@@ -31,7 +31,6 @@ class AppState with ChangeNotifier {
     checkForSavedPrivateKey().then((_) => {
           // if there is a saved private key, navigate to the signing screen
           if (npub != "") navigate(Screen.signing)
-          // notifyListeners()
         });
   }
   /////// Navigation
@@ -136,7 +135,7 @@ class AppState with ChangeNotifier {
   /// the last event that was scanned or entered
   nostr.Event? scannedEvent;
 
-  // a getter that transforms the scannedEvent into a string
+  /// a getter that transforms the scannedEvent into a string
   String get prettyEventString {
     if (scannedEvent == null) return "Scan an event...";
 
@@ -167,9 +166,9 @@ class AppState with ChangeNotifier {
   }
 
   Future<nostr.Event> signEvent() async {
-    var pk = await _readSecretKey();
-    if (scannedEvent == null || pk == null) {
-      // sign event page should only be exposed if there is a private key to use
+    var privateKey = await _readSecretKey();
+    if (scannedEvent == null || privateKey == null) {
+      // sign event page should only be exposed if there is a private key and an event to sign
       throw UnimplementedError('Event or private key is null');
     } else {
       // sign the event
@@ -179,7 +178,7 @@ class AppState with ChangeNotifier {
         kind: scannedEvent!.kind,
         tags: scannedEvent!.tags,
         content: scannedEvent!.content,
-        privkey: pk,
+        privkey: privateKey,
       );
       if (!signedEvent.isValid()) {
         throw UnimplementedError('Error signing event');
