@@ -13,18 +13,13 @@ class KeyEntryScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
-      appBar: AppBar(
-        title: const Text('Wavlake'),
-        backgroundColor: Colors.green.shade300,
-      ),
       body: Form(
           key: appState.formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TopBackButton(
-                appState: appState,
+              const TopBackButton(
                 title: "Add an Account",
               ),
               SizedBox(
@@ -79,35 +74,5 @@ class KeyEntryScreen extends StatelessWidget {
             ],
           )),
     );
-  }
-}
-
-Widget getTextWidgets(List<String> strings, deleteKey) {
-  List<Widget> list = List<Widget>.empty(growable: true);
-  for (var i = 0; i < strings.length; i++) {
-    var nsec = strings[i];
-    list.add(Row(children: [
-      Text(nsec.substring(0, 12)),
-      ElevatedButton(
-        onPressed: () => deleteKey(i),
-        child: const Text('Delete'),
-      ),
-    ]));
-  }
-  return Column(children: list);
-}
-
-// a Text widget that returns an npub or nothing if null
-class NpubTextWidget extends StatelessWidget {
-  final String text;
-  const NpubTextWidget(this.text, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    if (text != "" && text.isNotEmpty) return Text(text);
-
-    // if no npub, return "nothing"
-    // https://stackoverflow.com/questions/53455358/how-to-present-an-empty-view-in-flutter
-    return const SizedBox.shrink();
   }
 }
