@@ -1,4 +1,6 @@
 // import 'package:bip340/bip340.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nostr_tools/nostr_tools.dart';
 import 'package:nostr/nostr.dart' as nostr;
@@ -7,6 +9,25 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'constants.dart';
+
+class PointlessTimer {
+  PointlessTimer(Duration d) {
+    _timer = Timer(d, () => _completer.complete());
+  }
+
+  late final Timer _timer;
+  final _completer = Completer();
+
+  Future get future => _completer.future;
+
+  void cancel() {
+    _timer.cancel();
+    _completer.complete();
+  }
+}
+// final pointless = PointlessTimer(Duration(seconds: 3));
+// Timer(Duration(seconds: 2), () => pointless.cancel());
+// await pointless.future;
 
 final _keyGenerator = KeyApi();
 final _nip19 = Nip19();
@@ -32,18 +53,30 @@ class AppState with ChangeNotifier {
 
   /// Navigation
   Screen currentScreen = Screen.welcome;
+  String loadingText = "";
 
   /// A method that sets the initial screen
   void setInitialScreen() async {
+    // // TODO store this boolean in unsecure storage
+    // var hasSeenWelcomeScreen = true;
+    // if (!hasSeenWelcomeScreen) {
+    //   // bail and show the default welcome screen
+    //   return;
+    // }
+
+    loadingText = "Checking for any stored private keys...";
+    navigate(Screen.loading);
     // this will save the npub to state if the pk exists
-    await checkForSavedPrivateKey();
 
-    // if there is a saved private key, navigate to the signing screen
-    if (npub != "") navigate(Screen.signing);
+    var doesPrivateKeyExists = await checkForSavedPrivateKey();
 
-    var hasSeenWelcomeScreen = true; // store this boolean in unsecure storage
-
-    navigate(hasSeenWelcomeScreen ? Screen.userProfile : Screen.welcome);
+    if (doesPrivateKeyExists) {
+      // if there is a saved private key, navigate to the signing screen
+      navigate(Screen.signing);
+    } else {
+      // we need a key to do anything, so show the profile page
+      navigate(Screen.userProfile);
+    }
   }
 
   /// A method to navigate to a new screen
@@ -111,12 +144,14 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> checkForSavedPrivateKey() async {
+  Future<bool> checkForSavedPrivateKey() async {
     // read the key
     var pk = await _readSecretKey();
     // dont save to state, since its a secret
     // instead, derive the npub from it
     npub = pk;
+
+    return pk != null;
   }
 
   bool isValidNsec(String value) {

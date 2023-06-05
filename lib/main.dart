@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:watermelon/screens/loading_screen.dart';
 import 'model/constants.dart';
 import 'screens/signing_screen.dart';
 import 'screens/user_profile_screen.dart';
@@ -57,6 +58,9 @@ class _MyHomePageState extends State<_MyHomePage> {
         break;
       case Screen.scanner:
         page = const ScannerScreen();
+        break;
+      case Screen.loading:
+        page = const LoadingScreen();
         break;
       default:
         throw UnimplementedError('no widget for ${appState.currentScreen}');

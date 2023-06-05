@@ -20,7 +20,7 @@ class SigningScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const UserProfile(),
+              const UserAvatar(),
               SizedBox(
                 height: 300,
                 child: Column(
