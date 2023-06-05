@@ -46,15 +46,31 @@ class TopBackButton extends StatelessWidget {
   }
 }
 
+// fake profile image url, update to pull from relay
+// https://github.com/nostr-protocol/nips/blob/master/01.md#basic-event-kinds
+var profileImageUrl = "https://i.pravatar.cc/200";
+
 // a Text widget that returns an npub or nothing if null
-class UserProfile extends StatelessWidget {
-  const UserProfile({super.key});
+class UserAvatar extends StatelessWidget {
+  const UserAvatar({super.key});
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
     if (appState.npub != "" && appState.npub.isNotEmpty) {
-      return Text("Logged in as: ${appState.npub.substring(0, 9)}");
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton(
+              onPressed: () {
+                appState.navigate(Screen.userProfile);
+              },
+              child: SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: Image.network(profileImageUrl))),
+        ],
+      );
     }
 
     // if no npub, return "nothing"
