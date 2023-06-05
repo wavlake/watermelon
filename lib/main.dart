@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'model/constants.dart';
 import 'screens/signing_screen.dart';
 import 'screens/key_entry_screen.dart';
 import 'screens/welcome_screen.dart';
@@ -45,20 +46,20 @@ class _MyHomePageState extends State<_MyHomePage> {
 
     Widget page;
     switch (appState.currentScreen) {
-      case 0:
+      case Screen.welcome:
         page = const WelcomeScreen();
         break;
-      case 1:
+      case Screen.keyEntry:
         page = const KeyEntryScreen();
         break;
-      case 2:
-        page = const ScannerScreen();
-        break;
-      case 3:
+      case Screen.signing:
         page = const SigningScreen();
         break;
+      case Screen.scanner:
+        page = const ScannerScreen();
+        break;
       default:
-        throw UnimplementedError('no widget for $appState');
+        throw UnimplementedError('no widget for ${appState.currentScreen}');
     }
 
     // The container for the current page, with its background color

@@ -17,10 +17,7 @@ class ScannerScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          TopBackButton(
-              appState: appState,
-              title:
-                  "Scan a nostr event QR code, like the ones in Wavlake Studio"),
+          const TopBackButton(title: "Scan a nostr event QR code"),
           // Mobile Scanner is finnicky
           // its immediate parent needs to be something like SizedBox
           SizedBox(
@@ -35,7 +32,7 @@ class ScannerScreen extends StatelessWidget {
               onDetect: (capture) {
                 final List<Barcode> barcodes = capture.barcodes;
                 for (final barcode in barcodes) {
-                  debugPrint('Barcode found! ${barcode.rawValue}');
+                  appState.parseEventJson(barcode.rawValue);
                 }
               },
             ),
@@ -45,3 +42,13 @@ class ScannerScreen extends StatelessWidget {
     );
   }
 }
+
+// {
+//   "id": "7d2b298bb3cf844f7d1142fc122aeafdbfadf6e42475b73cf38d62e676240005",
+//   "pubkey": "5f836955b840df25c5e971e02fd0905bc227c04bd29ea4dbd6a0b82efb346261",
+//   "created_at": 1685718780,
+//   "kind": 1,
+//   "tags": [],
+//   "content": "testing flutter",
+// }
+//   "sig": "35fed0f762884d6091cdf8f5e2e71311a0cbafd3d91ad9daab57cbe69128caab372b2d56ca91885291794bc77792f16814ec596d71adbdf070dfd5a079038828"

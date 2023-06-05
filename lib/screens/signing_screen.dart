@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../components.dart';
+import '../model/constants.dart';
 import '../model/state.dart';
 
 class SigningScreen extends StatelessWidget {
@@ -12,38 +14,52 @@ class SigningScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
-      appBar: AppBar(
-        title: const Text('Wavlake'),
-        backgroundColor: Colors.green.shade300,
-      ),
-      body: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("Welcome to the scanner"),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: Text("some text here"),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
-              child: Column(
+      body: Form(
+          key: appState.formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const TopBackButton(
+                title: "Back to Accounts",
+              ),
+              SizedBox(
+                height: 300,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: null,
-                      child: Text('Generate new nsec'),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(appState.prettyEventString),
                     ),
-                    ElevatedButton(
-                      onPressed: null,
-                      child: Text('Read saved nsec'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            appState.navigate(Screen.scanner);
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(Icons.qr_code_scanner),
+                              Text('Scan Event'),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            appState.signEvent();
+                          },
+                          child: const Text('Sign & Publish'),
+                        ),
+                      ],
                     ),
-                  ]),
-            ),
-          ],
-        ),
-      ),
+                    const LoggedInAs(),
+                  ],
+                ),
+              ),
+            ],
+          )),
     );
   }
 }

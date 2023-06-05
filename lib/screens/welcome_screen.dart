@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../model/constants.dart';
 import '../model/state.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -19,7 +20,7 @@ class WelcomeScreen extends StatelessWidget {
             child: Text("Welcome to wavlake"),
           ),
           ElevatedButton(
-            onPressed: () => appState.navigate(1),
+            onPressed: () => appState.navigate(Screen.keyEntry),
             child: const Text("Add an account"),
           ),
         ]));
