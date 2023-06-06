@@ -57,21 +57,20 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
-    if (appState.npub != "" && appState.npub.isNotEmpty) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          TextButton(
-              onPressed: () {
-                appState.navigate(Screen.userProfile);
-              },
-              child: SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: Image.network(profileImageUrl))),
-        ],
-      );
-    }
+
+    // if (appState.activeProfile != null) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+            onPressed: () {
+              appState.navigate(Screen.userProfile);
+            },
+            child: SizedBox(
+                width: 80, height: 80, child: Image.network(profileImageUrl))),
+      ],
+    );
+    // }
 
     // if no npub, return "nothing"
     // https://stackoverflow.com/questions/53455358/how-to-present-an-empty-view-in-flutter
