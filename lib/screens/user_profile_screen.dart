@@ -18,10 +18,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
+    // add account form
     if (isAddingAccount) {
-      return AddAccountScreen(appState: appState);
+      return AddAccountForm(appState: appState);
     }
 
+    // profile list view
     return Scaffold(
         backgroundColor: Colors.pink.shade100,
         body: Row(
@@ -63,29 +65,39 @@ class ProfileRow extends StatelessWidget {
 
     return Row(
       children: [
+        profile.isActive
+            ? const Icon(
+                Icons.check,
+                color: Colors.green,
+                size: 20.0,
+              )
+            : TextButton(
+                onPressed: () {
+                  appState.deleteProfile(profile);
+                },
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                  size: 20.0,
+                )),
         Text(profile.npub.substring(0, 8)),
         TextButton(
             onPressed: () {
-              appState.deleteAccount(profile);
-            },
-            child: const Text("Delete")),
-        TextButton(
-            onPressed: () {
-              appState.makeAccountActive(profile);
+              appState.makeProfileActive(profile);
             },
             child: const Text("Make Active")),
         TextButton(
             onPressed: () {
-              appState.editAccount(profile);
+              appState.editProfile(profile, profile.label);
             },
-            child: const Text("Edit")),
+            child: const Text("Update label")),
       ],
     );
   }
 }
 
-class AddAccountScreen extends StatelessWidget {
-  const AddAccountScreen({
+class AddAccountForm extends StatelessWidget {
+  const AddAccountForm({
     super.key,
     required this.appState,
   });

@@ -39,11 +39,17 @@ const storageKeyUserProfiles = "userPrivateProfiles";
 class UserProfile {
   // nsec is marked as required since we dont have a default value like isActive
   // TODO - accept privateHex in addition to nsec
-  UserProfile({required this.nsec, isActive}) {
+  UserProfile({required this.nsec, bool? isActive = false, String? label}) {
     nsec = nsec;
     isActive = isActive;
+    label = label;
   }
 
+  setActive(bool active) {
+    isActive = active;
+  }
+
+  String label = "";
   String nsec;
   bool isActive = false;
 
@@ -153,7 +159,7 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteAccount(UserProfile profile) async {
+  Future<void> deleteProfile(UserProfile profile) async {
     userProfiles.remove(profile);
     // json encode for storage
     var updatedProfiles =
@@ -164,8 +170,26 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> editAccount(UserProfile profile) async {}
-  Future<void> makeAccountActive(UserProfile profile) async {}
+  Future<void> makeProfileActive(UserProfile targetProfile) async {
+    try {
+      // set all profiles to inactive
+      for (var profile in userProfiles) {
+        // update all profiles to inactive
+        // except the targetProfile
+        profile.setActive(targetProfile.nsec == profile.nsec);
+      }
+
+      // json encode for storage
+      var jsonProfiles =
+          jsonEncode(userProfiles.map((e) => e.toJson()).toList());
+
+      await _writeSecretKey(value: jsonProfiles, key: storageKeyUserProfiles);
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error adding new profile: $e");
+    }
+  }
 
   Future<void> removeAllUserData() async {
     await _deleteSecretKey(key: storageKeyPrivateHex);
@@ -174,13 +198,38 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> editProfile(UserProfile profile, String label) async {
+    try {
+      var newUserProfile = UserProfile(
+        nsec: profile.nsec,
+        label: label,
+      );
+      userProfiles = userProfiles
+          .map((e) => e.nsec == profile.nsec ? newUserProfile : e)
+          .toList();
+      // json encode for storage
+      var jsonProfiles =
+          jsonEncode(userProfiles.map((e) => e.toJson()).toList());
+
+      await _writeSecretKey(value: jsonProfiles, key: storageKeyUserProfiles);
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error adding new profile: $e");
+    }
+  }
+
   Future<void> addNewProfile() async {
     try {
       var newUserProfile = UserProfile(
         nsec: nsecController.text,
         // if there is no active profile, set this first one to active
-        isActive: activeProfile == null ? true : false,
       );
+      // if there is not activeProfile
+      if (activeProfile == null) {
+        // make the new profile active
+        newUserProfile.setActive(true);
+      }
 
       // json encode for storage
       var updatedProfiles =
@@ -299,7 +348,9 @@ class AppState with ChangeNotifier {
   // The user profile that is currently active, can be null
   UserProfile? get activeProfile {
     try {
-      return userProfiles.firstWhere((element) => element.isActive);
+      var activeProfile =
+          userProfiles.firstWhere((element) => element.isActive);
+      return activeProfile;
     } catch (e) {
       // if no active profile is found, return null
       return null;
