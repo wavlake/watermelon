@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../components.dart';
+import '../model/profiles.dart';
 import '../model/state.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -35,8 +36,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 children: [
                   Column(
                       children: appState.userProfiles.map((profile) {
-                    var w = ProfileRow(profile: profile);
-                    return w;
+                    return ProfileRow(profile: profile);
                   }).toList()),
                   ElevatedButton(
                       child: const Text("Add an account"),
@@ -80,7 +80,7 @@ class ProfileRow extends StatelessWidget {
                   color: Colors.red,
                   size: 20.0,
                 )),
-        Text(profile.npub.substring(0, 8)),
+        Text(profile.label),
         TextButton(
             onPressed: () {
               appState.makeProfileActive(profile);

@@ -7,47 +7,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'profiles.dart';
 import 'constants.dart';
 
 final _keyGenerator = KeyApi();
 final _nip19 = Nip19();
 final eventApi = EventApi();
 const _storage = FlutterSecureStorage();
-const storageKeyPrivateHex = "privateHexKey";
-const storageKeyUserProfiles = "userPrivateProfiles";
 
-class UserProfile {
-  // nsec is marked as required since we dont have a default value like isActive
-  // TODO - accept privateHex in addition to nsec
-  UserProfile({required this.nsec, bool? isActive = false, String? label}) {
-    nsec = nsec;
-    isActive = isActive;
-    label = label;
-  }
-
-  setActive(bool active) {
-    isActive = active;
-  }
-
-  String label = "";
-  String nsec;
-  bool isActive = false;
-
-  // these are all dervied from the nsec
-  String get npub {
-    _keyGenerator.getPublicKey(privateHex);
-    return _nip19.npubEncode(publicHex);
-  }
-
-  String get privateHex => _nip19.decode(nsec)['data'];
-  String get publicHex => _keyGenerator.getPublicKey(privateHex);
-
-  Map<String, dynamic> toJson() {
-    return {
-      "nsec": nsec,
-      "isActive": isActive,
-    };
-  }
+String nsecToNpub(String nsec) {
+  var privateHex = _nip19.decode(nsec)['data'];
+  var publicHex = _keyGenerator.getPublicKey(privateHex);
+  return _nip19.npubEncode(publicHex);
 }
 
 IOSOptions _getIOSOptions() => const IOSOptions(
@@ -150,25 +121,27 @@ class AppState with ChangeNotifier {
     var updatedProfiles =
         jsonEncode(userProfiles.map((e) => e.toJson()).toList());
 
-    await _writeSecretKey(value: updatedProfiles, key: storageKeyUserProfiles);
+    // update profiles in storage
+    unsecureStorage.write(publicProfileInfo, updatedProfiles);
 
+    var npubMap = await _readSecretKeyMap();
+    npubMap.remove(profile.npub);
+
+    // update profile secrets in storage
+    await _writeSecretKey(key: secureNpubNsecMap, value: jsonEncode(npubMap));
     notifyListeners();
   }
 
   Future<void> makeProfileActive(UserProfile targetProfile) async {
     try {
+      print(targetProfile.npub);
       // set all profiles to inactive
       for (var profile in userProfiles) {
         // update all profiles to inactive
         // except the targetProfile
-        profile.setActive(targetProfile.nsec == profile.nsec);
+        print(profile.npub);
+        profile.setActive(targetProfile.npub == profile.npub);
       }
-
-      // json encode for storage
-      var jsonProfiles =
-          jsonEncode(userProfiles.map((e) => e.toJson()).toList());
-
-      await _writeSecretKey(value: jsonProfiles, key: storageKeyUserProfiles);
 
       notifyListeners();
     } catch (e) {
@@ -177,26 +150,24 @@ class AppState with ChangeNotifier {
   }
 
   Future<void> removeAllUserData() async {
+    print('remvoing all user data');
     await _deleteSecretKey(key: storageKeyPrivateHex);
     await _deleteSecretKey(key: storageKeyUserProfiles);
+    await _deleteSecretKey(key: secureNpubNsecMap);
 
     notifyListeners();
   }
 
   Future<void> editProfile(UserProfile profile, String label) async {
     try {
-      var newUserProfile = UserProfile(
-        nsec: profile.nsec,
-        label: label,
-      );
-      userProfiles = userProfiles
-          .map((e) => e.nsec == profile.nsec ? newUserProfile : e)
-          .toList();
+      profile.setLabel(label);
+
       // json encode for storage
-      var jsonProfiles =
+      var updatedProfiles =
           jsonEncode(userProfiles.map((e) => e.toJson()).toList());
 
-      await _writeSecretKey(value: jsonProfiles, key: storageKeyUserProfiles);
+      // update profiles in storage
+      unsecureStorage.write(publicProfileInfo, updatedProfiles);
 
       notifyListeners();
     } catch (e) {
@@ -206,9 +177,11 @@ class AppState with ChangeNotifier {
 
   Future<void> addNewProfile() async {
     try {
+      var newNsec = nsecController.text;
+      var newNpub = nsecToNpub(newNsec);
       var newUserProfile = UserProfile(
-        nsec: nsecController.text,
-        // if there is no active profile, set this first one to active
+        npub: newNpub,
+        label: "New Profile",
       );
       // if there is not activeProfile
       if (activeProfile == null) {
@@ -216,15 +189,30 @@ class AppState with ChangeNotifier {
         newUserProfile.setActive(true);
       }
 
+      bool npubAlreadyExists = userProfiles.any((element) {
+        return element.npub == newNpub;
+      });
+
+      if (npubAlreadyExists) {
+        throw UnimplementedError('This profile already exists');
+      }
+
+      // add the new profile to the local state list
+      userProfiles.add(newUserProfile);
+
       // json encode for storage
       var updatedProfiles =
           jsonEncode(userProfiles.map((e) => e.toJson()).toList());
+      // update profiles in storage
+      unsecureStorage.write(publicProfileInfo, updatedProfiles);
+      var npubMap = await _readSecretKeyMap();
+      // add the new secret to the secure storage map
+      npubMap.addAll({newNpub: newNsec});
 
-      await _writeSecretKey(
-          value: updatedProfiles, key: storageKeyUserProfiles);
-      // after a succesfull write, add to local state as well
-      userProfiles.add(newUserProfile);
+      // update profile secrets in storage
+      await _writeSecretKey(key: secureNpubNsecMap, value: jsonEncode(npubMap));
 
+      // clear out the secret key field and navigate to the signing screen
       clearNsecField();
       navigate(Screen.signing);
       notifyListeners();
@@ -287,7 +275,12 @@ class AppState with ChangeNotifier {
       throw UnimplementedError('Event or private key is null');
     } else {
       // activeProfile is nullable, but we checked for that above
-      var signingKey = activeProfile!.privateHex;
+      var privateKeyMap = await _readSecretKeyMap();
+      var signingKey = privateKeyMap[activeProfile!.npub];
+
+      if (signingKey == null) {
+        throw UnimplementedError('Error getting private key');
+      }
 
       // sign the event
       // any pubkey in the unsigned event is ignored
@@ -318,13 +311,13 @@ class AppState with ChangeNotifier {
   }
 
   Future<void> loadSavedProfiles() async {
-    final jsonUserProfiles = await _readSecretKey(key: storageKeyUserProfiles);
+    // update profiles in storage
+    var jsonProfiles = unsecureStorage.read(publicProfileInfo);
 
     try {
-      List<dynamic> jsonProfiles = jsonDecode(jsonUserProfiles ?? "");
-      List<UserProfile> listOfProfiles = jsonProfiles
-          .map((e) => UserProfile(nsec: e['nsec'], isActive: e['isActive']))
-          .toList();
+      List<dynamic> userProfiles = jsonDecode(jsonProfiles ?? "");
+      List<UserProfile> listOfProfiles =
+          userProfiles.map((e) => UserProfile.fromJson(e)).toList();
 
       userProfiles = listOfProfiles;
     } catch (e) {
@@ -342,7 +335,7 @@ class AppState with ChangeNotifier {
     );
   }
 
-  Future<void> _writeSecretKey({value = String, key = String}) async {
+  Future<void> _writeSecretKey({key = String, value = String}) async {
     await _storage.write(
       key: key,
       value: value,
@@ -351,14 +344,18 @@ class AppState with ChangeNotifier {
     );
   }
 
-  Future<String?> _readSecretKey({key = String}) async {
-    final privateKey = await _storage.read(
-      key: key,
+  Future<Map<String, dynamic>> _readSecretKeyMap() async {
+    final value = await _storage.read(
+      key: secureNpubNsecMap,
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
     );
-
-    // return the saved private key, or null if not found
-    return privateKey;
+    if (value == null) {
+      print('value is null');
+      return {};
+    }
+    Map<String, dynamic> map = jsonDecode(value);
+    // return the value, or an empty string if not found
+    return map;
   }
 }
