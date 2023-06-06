@@ -1,33 +1,13 @@
-// import 'package:bip340/bip340.dart';
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:nostr_tools/nostr_tools.dart';
 import 'package:nostr/nostr.dart' as nostr;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_storage/get_storage.dart';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'constants.dart';
-
-class PointlessTimer {
-  PointlessTimer(Duration d) {
-    _timer = Timer(d, () => _completer.complete());
-  }
-
-  late final Timer _timer;
-  final _completer = Completer();
-
-  Future get future => _completer.future;
-
-  void cancel() {
-    _timer.cancel();
-    _completer.complete();
-  }
-}
-// final pointless = PointlessTimer(Duration(seconds: 3));
-// Timer(Duration(seconds: 2), () => pointless.cancel());
-// await pointless.future;
 
 final _keyGenerator = KeyApi();
 final _nip19 = Nip19();
@@ -83,12 +63,42 @@ AndroidOptions _getAndroidOptions() => const AndroidOptions(
 class AppState with ChangeNotifier {
   // this runs when we call AppState() in main.dart in the ChangeNotifierProvider create method
   AppState() {
+    GetStorage.init();
     setInitialScreen();
   }
 
-  /// Navigation
+  final unsecureStorage = GetStorage();
+  List<UserProfile> userProfiles = [];
   Screen currentScreen = Screen.welcome;
   String loadingText = "";
+  String unsecurePrivateHexKey = "";
+  TextEditingController nsecController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  String relayAddress = "wss://relay.wavlake.com";
+
+  /// The user profile that is currently active, can be null
+  UserProfile? get activeProfile {
+    try {
+      var activeProfile =
+          userProfiles.firstWhere((element) => element.isActive);
+      return activeProfile;
+    } catch (e) {
+      // if no active profile is found, return null
+      return null;
+    }
+  }
+
+  /// The last event that was scanned or entered
+  nostr.Event? scannedEvent;
+
+  /// A getter that transforms the scannedEvent into a string
+  String get prettyEventString {
+    if (scannedEvent == null) return "Scan an event...";
+
+    JsonEncoder encoder = const JsonEncoder.withIndent('  ');
+    String prettyprint = encoder.convert(scannedEvent);
+    return prettyprint;
+  }
 
   /// A method that sets the initial screen
   void setInitialScreen() async {
@@ -121,40 +131,15 @@ class AppState with ChangeNotifier {
 
   /////// Key Entry
 
-  String insecurePrivateHexKey = "";
-  TextEditingController nsecController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
-
-  /// a getter that transforms the privateHex to publicHex
-  String get publicHexKey {
-    if (insecurePrivateHexKey == "") return "";
-    return _keyGenerator.getPublicKey(insecurePrivateHexKey);
-  }
-
-  /// a setter that transforms the privateHex to npub
-  set npub(String? privateHexKey) {
-    if (privateHexKey == null) return;
-    var publicHex = _keyGenerator.getPublicKey(privateHexKey);
-    _npub = _nip19.npubEncode(publicHex);
-  }
-
-  String get npub => _npub ?? "";
-  String? _npub;
-
-  /// a getter that transforms the privateHex to nsec
-  String get nsecKey {
-    if (insecurePrivateHexKey == "") return "";
-    return _nip19.nsecEncode(insecurePrivateHexKey);
-  }
-
   void generateNewNsec() {
-    insecurePrivateHexKey = _keyGenerator.generatePrivateKey();
-    nsecController.text = nsecKey;
+    unsecurePrivateHexKey = _keyGenerator.generatePrivateKey();
+    var nsec = _nip19.nsecEncode(unsecurePrivateHexKey);
+    nsecController.text = nsec;
     notifyListeners();
   }
 
   void clearNsecField() {
-    insecurePrivateHexKey = "";
+    unsecurePrivateHexKey = "";
     nsecController.text = "";
     notifyListeners();
   }
@@ -261,8 +246,8 @@ class AppState with ChangeNotifier {
         return false;
       }
       final nip19 = Nip19();
-      var insecurePrivateHexKey = nip19.decode(value);
-      if (insecurePrivateHexKey['type'] != 'nsec') {
+      var unsecurePrivateHexKey = nip19.decode(value);
+      if (unsecurePrivateHexKey['type'] != 'nsec') {
         return false;
       }
       return true;
@@ -274,20 +259,6 @@ class AppState with ChangeNotifier {
 
   /////// Event Scanning
 
-  String relayAddress = "wss://relay.wavlake.com";
-
-  /// the last event that was scanned or entered
-  nostr.Event? scannedEvent;
-
-  // a getter that transforms the scannedEvent into a string
-  String get prettyEventString {
-    if (scannedEvent == null) return "Scan an event...";
-
-    JsonEncoder encoder = const JsonEncoder.withIndent('  ');
-    String prettyprint = encoder.convert(scannedEvent);
-    return prettyprint;
-  }
-
   void parseEventJson(String? jsonString) {
     if (jsonString == null) return;
     try {
@@ -296,6 +267,7 @@ class AppState with ChangeNotifier {
       // The nostr lib requires a signature string be present
       if (jsonEvent["sig"] == null) {
         // This is overwritten when the user signs the event
+        // can we skip this????
         jsonEvent["sig"] = "Tap sign to sign this event";
       }
       // don't verify the event, since the sig is invalid
@@ -344,20 +316,6 @@ class AppState with ChangeNotifier {
     // and maybe keep it open longer
     await webSocket.close();
   }
-
-  // The user profile that is currently active, can be null
-  UserProfile? get activeProfile {
-    try {
-      var activeProfile =
-          userProfiles.firstWhere((element) => element.isActive);
-      return activeProfile;
-    } catch (e) {
-      // if no active profile is found, return null
-      return null;
-    }
-  }
-
-  List<UserProfile> userProfiles = [];
 
   Future<void> loadSavedProfiles() async {
     final jsonUserProfiles = await _readSecretKey(key: storageKeyUserProfiles);

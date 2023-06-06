@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:watermelon/screens/loading_screen.dart';
+import 'package:get_storage/get_storage.dart';
 import 'model/constants.dart';
 import 'screens/signing_screen.dart';
 import 'screens/user_profile_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/scanner_screen.dart';
+import 'screens/loading_screen.dart';
 import 'model/state.dart';
 
-void main() {
+void main() async {
+  // init local storage, used by AppState provider
+  await GetStorage.init();
   runApp(
     MultiProvider(
       providers: [
