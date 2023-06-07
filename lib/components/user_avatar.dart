@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+import '../model/constants.dart';
+import '../model/state.dart';
+import 'package:provider/provider.dart';
+
+// fake profile image url, update to pull from relay
+// https://github.com/nostr-protocol/nips/blob/master/01.md#basic-event-kinds
+var profileImageUrl = "https://i.pravatar.cc/200";
+
+// a Text widget that returns an npub or nothing if null
+class UserAvatar extends StatelessWidget {
+  const UserAvatar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+
+    // if (appState.activeProfile != null) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+            onPressed: () {
+              appState.navigate(Screen.userProfile);
+            },
+            child: SizedBox(
+                width: 80, height: 80, child: Image.network(profileImageUrl))),
+      ],
+    );
+    // }
+
+    // if no npub, return "nothing"
+    // https://stackoverflow.com/questions/53455358/how-to-present-an-empty-view-in-flutter
+    return const SizedBox.shrink();
+  }
+}

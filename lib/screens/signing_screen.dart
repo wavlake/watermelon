@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../components.dart';
+import '../components/user_avatar.dart';
 import '../model/constants.dart';
 import '../model/state.dart';
 

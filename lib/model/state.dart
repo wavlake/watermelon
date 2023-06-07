@@ -134,12 +134,10 @@ class AppState with ChangeNotifier {
 
   Future<void> makeProfileActive(UserProfile targetProfile) async {
     try {
-      print(targetProfile.npub);
       // set all profiles to inactive
       for (var profile in userProfiles) {
         // update all profiles to inactive
         // except the targetProfile
-        print(profile.npub);
         profile.setActive(targetProfile.npub == profile.npub);
       }
 
@@ -150,10 +148,10 @@ class AppState with ChangeNotifier {
   }
 
   Future<void> removeAllUserData() async {
-    print('remvoing all user data');
     await _deleteSecretKey(key: storageKeyPrivateHex);
     await _deleteSecretKey(key: storageKeyUserProfiles);
     await _deleteSecretKey(key: secureNpubNsecMap);
+    userProfiles = [];
 
     notifyListeners();
   }

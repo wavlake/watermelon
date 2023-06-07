@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:watermelon/model/constants.dart';
 
 import '../components.dart';
+import '../components/delete_all_data_dialog.dart';
+import '../components/delete_profile_dialog.dart';
 import '../model/profiles.dart';
 import '../model/state.dart';
 
@@ -35,16 +38,28 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Column(
-                      children: appState.userProfiles.map((profile) {
-                    return ProfileRow(profile: profile);
-                  }).toList()),
+                      children: appState.userProfiles.isEmpty
+                          ? [const Text("Add an account to get started...")]
+                          : appState.userProfiles.map((profile) {
+                              return ProfileRow(profile: profile);
+                            }).toList()),
                   ElevatedButton(
                       child: const Text("Add an account"),
                       onPressed: () {
                         setState(() {
                           isAddingAccount = true;
                         });
-                      })
+                      }),
+                  if (appState.activeProfile != null)
+                    ElevatedButton(
+                        child: const Text("Event Page"),
+                        onPressed: () {
+                          appState.navigate(Screen.signing);
+                        }),
+                  ElevatedButton(
+                    onPressed: () => deleteAllDataDialog(context),
+                    child: const Text('Delete All User Data'),
+                  ),
                 ]),
           ],
         ));
@@ -72,9 +87,7 @@ class ProfileRow extends StatelessWidget {
                 size: 20.0,
               )
             : TextButton(
-                onPressed: () {
-                  appState.deleteProfile(profile);
-                },
+                onPressed: () => deleteProfileDialog(context, profile),
                 child: const Icon(
                   Icons.delete,
                   color: Colors.red,
@@ -160,10 +173,6 @@ class AddAccountForm extends StatelessWidget {
             ),
             Column(
               children: [
-                ElevatedButton(
-                  onPressed: appState.removeAllUserData,
-                  child: const Text('Delete All User Data'),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: TextButton(
