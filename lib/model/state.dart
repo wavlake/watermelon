@@ -1,18 +1,25 @@
-// import 'package:bip340/bip340.dart';
 import 'package:flutter/material.dart';
 import 'package:nostr_tools/nostr_tools.dart';
 import 'package:nostr/nostr.dart' as nostr;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_storage/get_storage.dart';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'profiles.dart';
 import 'constants.dart';
 
 final _keyGenerator = KeyApi();
 final _nip19 = Nip19();
 final eventApi = EventApi();
 const _storage = FlutterSecureStorage();
-const storageKeyPrivateHex = "privateHexKey";
+
+String nsecToNpub(String nsec) {
+  var privateHex = _nip19.decode(nsec)['data'];
+  var publicHex = _keyGenerator.getPublicKey(privateHex);
+  return _nip19.npubEncode(publicHex);
+}
 
 IOSOptions _getIOSOptions() => const IOSOptions(
       accountName: "flutter_secure_storage_service",
@@ -27,16 +34,64 @@ AndroidOptions _getAndroidOptions() => const AndroidOptions(
 class AppState with ChangeNotifier {
   // this runs when we call AppState() in main.dart in the ChangeNotifierProvider create method
   AppState() {
-    // initialize state
-    checkForSavedPrivateKey().then((_) => {
-          // if there is a saved private key, navigate to the signing screen
-          if (npub != "") navigate(Screen.signing)
-          // notifyListeners()
-        });
+    GetStorage.init();
+    setInitialScreen();
   }
-  /////// Navigation
 
+  final unsecureStorage = GetStorage();
+  List<UserProfile> userProfiles = [];
   Screen currentScreen = Screen.welcome;
+  String loadingText = "";
+  String unsecurePrivateHexKey = "";
+  TextEditingController nsecController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  String relayAddress = "wss://relay.wavlake.com";
+
+  /// The user profile that is currently active, can be null
+  UserProfile? get activeProfile {
+    try {
+      var activeProfile =
+          userProfiles.firstWhere((element) => element.isActive);
+      return activeProfile;
+    } catch (e) {
+      // if no active profile is found, return null
+      return null;
+    }
+  }
+
+  /// The last event that was scanned or entered
+  nostr.Event? scannedEvent;
+
+  /// A getter that transforms the scannedEvent into a string
+  String get prettyEventString {
+    if (scannedEvent == null) return "Scan an event...";
+
+    JsonEncoder encoder = const JsonEncoder.withIndent('  ');
+    String prettyprint = encoder.convert(scannedEvent);
+    return prettyprint;
+  }
+
+  /// A method that sets the initial screen
+  void setInitialScreen() async {
+    // // TODO store this boolean in unsecure storage
+    // var hasSeenWelcomeScreen = true;
+    // if (!hasSeenWelcomeScreen) {
+    //   // bail and show the default welcome screen
+    //   return;
+    // }
+
+    loadingText = "Checking for any stored private keys...";
+    navigate(Screen.loading);
+    await loadSavedProfiles();
+
+    if (activeProfile == null) {
+      // we need a profile to do anything, so show the profile page
+      navigate(Screen.userProfile);
+    } else {
+      // if there is a saved private key, navigate to the signing screen
+      navigate(Screen.signing);
+    }
+  }
 
   /// A method to navigate to a new screen
   void navigate(Screen newScreen) {
@@ -47,68 +102,127 @@ class AppState with ChangeNotifier {
 
   /////// Key Entry
 
-  String insecurePrivateHexKey = "";
-  TextEditingController nsecController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
-
-  /// a getter that transforms the privateHex to publicHex
-  String get publicHexKey {
-    if (insecurePrivateHexKey == "") return "";
-    return _keyGenerator.getPublicKey(insecurePrivateHexKey);
-  }
-
-  /// a setter that transforms the privateHex to npub
-  set npub(String? privateHexKey) {
-    if (privateHexKey == null) return;
-    var publicHex = _keyGenerator.getPublicKey(privateHexKey);
-    _npub = _nip19.npubEncode(publicHex);
-  }
-
-  String get npub => _npub ?? "";
-  String? _npub;
-
-  /// a getter that transforms the privateHex to nsec
-  String get nsecKey {
-    if (insecurePrivateHexKey == "") return "";
-    return _nip19.nsecEncode(insecurePrivateHexKey);
-  }
-
   void generateNewNsec() {
-    insecurePrivateHexKey = _keyGenerator.generatePrivateKey();
-    nsecController.text = nsecKey;
+    unsecurePrivateHexKey = _keyGenerator.generatePrivateKey();
+    var nsec = _nip19.nsecEncode(unsecurePrivateHexKey);
+    nsecController.text = nsec;
     notifyListeners();
   }
 
   void clearNsecField() {
-    insecurePrivateHexKey = "";
+    unsecurePrivateHexKey = "";
     nsecController.text = "";
     notifyListeners();
   }
 
-  Future<void> savePrivateHex() async {
-    var privateHex = _nip19.decode(nsecController.text)['data'];
-    await _writeSecretKey(value: privateHex);
+  Future<void> deleteProfile(UserProfile profile) async {
+    userProfiles.remove(profile);
+    // json encode for storage
+    var updatedProfiles =
+        jsonEncode(userProfiles.map((e) => e.toJson()).toList());
 
-    // save the npub key so we can show the user is logged in
-    npub = privateHex;
-    clearNsecField();
-    navigate(Screen.signing);
+    // update profiles in storage
+    unsecureStorage.write(publicProfileInfo, updatedProfiles);
+
+    var npubMap = await _readSecretKeyMap();
+    npubMap.remove(profile.npub);
+
+    // update profile secrets in storage
+    await _writeSecretKey(key: secureNpubNsecMap, value: jsonEncode(npubMap));
+    notifyListeners();
+  }
+
+  Future<void> makeProfileActive(UserProfile targetProfile) async {
+    try {
+      // set all profiles to inactive
+      for (var profile in userProfiles) {
+        // update all profiles to inactive
+        // except the targetProfile
+        profile.setActive(targetProfile.npub == profile.npub);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error adding new profile: $e");
+    }
+  }
+
+  Future<void> removeAllUserData() async {
+    await _deleteSecretKey(key: storageKeyPrivateHex);
+    await _deleteSecretKey(key: storageKeyUserProfiles);
+    await _deleteSecretKey(key: secureNpubNsecMap);
+    userProfiles = [];
 
     notifyListeners();
+  }
+
+  Future<void> editProfile(UserProfile profile, String label) async {
+    try {
+      profile.setLabel(label);
+
+      // json encode for storage
+      var updatedProfiles =
+          jsonEncode(userProfiles.map((e) => e.toJson()).toList());
+
+      // update profiles in storage
+      unsecureStorage.write(publicProfileInfo, updatedProfiles);
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error adding new profile: $e");
+    }
+  }
+
+  Future<void> addNewProfile() async {
+    try {
+      var newNsec = nsecController.text;
+      var newNpub = nsecToNpub(newNsec);
+      var newUserProfile = UserProfile(
+        npub: newNpub,
+        label: "New Profile",
+      );
+      // if there is not activeProfile
+      if (activeProfile == null) {
+        // make the new profile active
+        newUserProfile.setActive(true);
+      }
+
+      bool npubAlreadyExists = userProfiles.any((element) {
+        return element.npub == newNpub;
+      });
+
+      if (npubAlreadyExists) {
+        throw UnimplementedError('This profile already exists');
+      }
+
+      // add the new profile to the local state list
+      userProfiles.add(newUserProfile);
+
+      // json encode for storage
+      var updatedProfiles =
+          jsonEncode(userProfiles.map((e) => e.toJson()).toList());
+      // update profiles in storage
+      unsecureStorage.write(publicProfileInfo, updatedProfiles);
+      var npubMap = await _readSecretKeyMap();
+      // add the new secret to the secure storage map
+      npubMap.addAll({newNpub: newNsec});
+
+      // update profile secrets in storage
+      await _writeSecretKey(key: secureNpubNsecMap, value: jsonEncode(npubMap));
+
+      // clear out the secret key field and navigate to the signing screen
+      clearNsecField();
+      navigate(Screen.signing);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error adding new profile: $e");
+    }
   }
 
   Future<void> deletePrivateHex() async {
     await _deleteSecretKey();
     clearNsecField();
     notifyListeners();
-  }
-
-  Future<void> checkForSavedPrivateKey() async {
-    // read the key
-    var pk = await _readSecretKey();
-    // dont save to state, since its a secret
-    // instead, derive the npub from it
-    npub = pk;
   }
 
   bool isValidNsec(String value) {
@@ -118,8 +232,8 @@ class AppState with ChangeNotifier {
         return false;
       }
       final nip19 = Nip19();
-      var insecurePrivateHexKey = nip19.decode(value);
-      if (insecurePrivateHexKey['type'] != 'nsec') {
+      var unsecurePrivateHexKey = nip19.decode(value);
+      if (unsecurePrivateHexKey['type'] != 'nsec') {
         return false;
       }
       return true;
@@ -131,20 +245,6 @@ class AppState with ChangeNotifier {
 
   /////// Event Scanning
 
-  String relayAddress = "wss://relay.wavlake.com";
-
-  /// the last event that was scanned or entered
-  nostr.Event? scannedEvent;
-
-  // a getter that transforms the scannedEvent into a string
-  String get prettyEventString {
-    if (scannedEvent == null) return "Scan an event...";
-
-    JsonEncoder encoder = const JsonEncoder.withIndent('  ');
-    String prettyprint = encoder.convert(scannedEvent);
-    return prettyprint;
-  }
-
   void parseEventJson(String? jsonString) {
     if (jsonString == null) return;
     try {
@@ -153,6 +253,7 @@ class AppState with ChangeNotifier {
       // The nostr lib requires a signature string be present
       if (jsonEvent["sig"] == null) {
         // This is overwritten when the user signs the event
+        // can we skip this????
         jsonEvent["sig"] = "Tap sign to sign this event";
       }
       // don't verify the event, since the sig is invalid
@@ -167,19 +268,27 @@ class AppState with ChangeNotifier {
   }
 
   Future<nostr.Event> signEvent() async {
-    var pk = await _readSecretKey();
-    if (scannedEvent == null || pk == null) {
+    if (scannedEvent == null || activeProfile == null) {
       // sign event page should only be exposed if there is a private key to use
       throw UnimplementedError('Event or private key is null');
     } else {
+      // activeProfile is nullable, but we checked for that above
+      var privateKeyMap = await _readSecretKeyMap();
+      var nsecKey = privateKeyMap[activeProfile!.npub];
+      var hexSigningKey = _nip19.decode(nsecKey!)['data'];
+
+      if (hexSigningKey == null) {
+        throw UnimplementedError('Error getting private key');
+      }
+
       // sign the event
       // any pubkey in the unsigned event is ignored
       var signedEvent = nostr.Event.from(
-        createdAt: scannedEvent!.createdAt,
+        // createdAt: scannedEvent!.createdAt,
         kind: scannedEvent!.kind,
         tags: scannedEvent!.tags,
         content: scannedEvent!.content,
-        privkey: pk,
+        privkey: hexSigningKey,
       );
       if (!signedEvent.isValid()) {
         throw UnimplementedError('Error signing event');
@@ -200,33 +309,52 @@ class AppState with ChangeNotifier {
     await webSocket.close();
   }
 
+  Future<void> loadSavedProfiles() async {
+    // update profiles in storage
+    var jsonProfiles = unsecureStorage.read(publicProfileInfo);
+
+    try {
+      List<dynamic> userProfiles = jsonDecode(jsonProfiles ?? "");
+      List<UserProfile> listOfProfiles =
+          userProfiles.map((e) => UserProfile.fromJson(e)).toList();
+
+      userProfiles = listOfProfiles;
+    } catch (e) {
+      debugPrint("Error getting all saved profiles: $e");
+    }
+  }
+
   /////// Private methods
 
-  Future<void> _deleteSecretKey() async {
+  Future<void> _deleteSecretKey({key = String}) async {
     await _storage.delete(
-      key: storageKeyPrivateHex,
+      key: key,
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
     );
   }
 
-  Future<void> _writeSecretKey({value = String}) async {
+  Future<void> _writeSecretKey({key = String, value = String}) async {
     await _storage.write(
-      key: storageKeyPrivateHex,
+      key: key,
       value: value,
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
     );
   }
 
-  Future<String?> _readSecretKey() async {
-    final privateKey = await _storage.read(
-      key: storageKeyPrivateHex,
+  Future<Map<String, dynamic>> _readSecretKeyMap() async {
+    final value = await _storage.read(
+      key: secureNpubNsecMap,
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
     );
-
-    // return the saved private key, or null if not found
-    return privateKey;
+    if (value == null) {
+      print('value is null');
+      return {};
+    }
+    Map<String, dynamic> map = jsonDecode(value);
+    // return the value, or an empty string if not found
+    return map;
   }
 }

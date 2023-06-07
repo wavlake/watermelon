@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../components.dart';
+import '../components/user_avatar.dart';
 import '../model/constants.dart';
 import '../model/state.dart';
 
@@ -20,9 +20,7 @@ class SigningScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const TopBackButton(
-                title: "Back to Accounts",
-              ),
+              const UserAvatar(),
               SizedBox(
                 height: 300,
                 child: Column(
@@ -54,7 +52,6 @@ class SigningScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const LoggedInAs(),
                   ],
                 ),
               ),

@@ -20,7 +20,7 @@ class WelcomeScreen extends StatelessWidget {
             child: Text("Welcome to wavlake"),
           ),
           ElevatedButton(
-            onPressed: () => appState.navigate(Screen.keyEntry),
+            onPressed: () => appState.navigate(Screen.userProfile),
             child: const Text("Add an account"),
           ),
         ]));

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import '../model/constants.dart';
 import '../model/state.dart';
 import 'package:provider/provider.dart';
-
-import 'model/constants.dart';
 
 // Every screen gets a default back button target
 Map<Screen, Screen> backButtonMap = {
