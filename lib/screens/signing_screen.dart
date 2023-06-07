@@ -12,11 +12,9 @@ class SigningScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    return Scaffold(
-      backgroundColor: Colors.pink.shade100,
-      body: Form(
-          key: appState.formKey,
-          child: Column(
+    return Form(
+        key: appState.formKey,
+        child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -55,8 +53,6 @@ class SigningScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          )),
-    );
+            ]));
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:watermelon/screens/add_user_profile_screen.dart';
+import 'layout_wrapper.dart';
 import 'model/constants.dart';
 import 'screens/signing_screen.dart';
-import 'screens/userProfile/user_profile_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'screens/loading_screen.dart';
@@ -45,7 +46,6 @@ class _MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<_MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    var colorScheme = Theme.of(context).colorScheme;
     var appState = context.watch<AppState>();
 
     Widget page;
@@ -53,8 +53,10 @@ class _MyHomePageState extends State<_MyHomePage> {
       case Screen.welcome:
         page = const WelcomeScreen();
         break;
-      case Screen.userProfile:
-        page = const UserProfileScreen();
+      case Screen.addUserProfile:
+        page = AddUserProfileScreen(
+          appState: appState,
+        );
         break;
       case Screen.signing:
         page = const SigningScreen();
@@ -69,22 +71,6 @@ class _MyHomePageState extends State<_MyHomePage> {
         throw UnimplementedError('no widget for ${appState.currentScreen}');
     }
 
-    // The container for the current page, with its background color
-    // and subtle switching animation.
-    var mainArea = ColoredBox(
-      color: colorScheme.surfaceVariant,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: page,
-      ),
-    );
-
-    return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SafeArea(child: mainArea);
-        },
-      ),
-    );
+    return LayoutWrapper(page: page);
   }
 }

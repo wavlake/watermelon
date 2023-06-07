@@ -46,6 +46,7 @@ class AppState with ChangeNotifier {
   TextEditingController nsecController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String relayAddress = "wss://relay.wavlake.com";
+  bool showProfileSelector = false;
 
   /// The user profile that is currently active, can be null
   UserProfile? get activeProfile {
@@ -86,7 +87,7 @@ class AppState with ChangeNotifier {
 
     if (activeProfile == null) {
       // we need a profile to do anything, so show the profile page
-      navigate(Screen.userProfile);
+      navigate(Screen.addUserProfile);
     } else {
       // if there is a saved private key, navigate to the signing screen
       navigate(Screen.signing);
@@ -119,6 +120,12 @@ class AppState with ChangeNotifier {
 
   Future<void> deleteProfile(UserProfile profile) async {
     userProfiles.remove(profile);
+
+    // if we're deleting the active profile
+    if (profile.isActive && userProfiles.isNotEmpty) {
+      // promote the first profile to active
+      userProfiles.first.setActive(true);
+    }
     // json encode for storage
     var updatedProfiles =
         jsonEncode(userProfiles.map((e) => e.toJson()).toList());

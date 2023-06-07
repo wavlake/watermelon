@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../components.dart';
-import '../../model/state.dart';
+import '../components.dart';
+import '../model/state.dart';
 
-class AddAccountForm extends StatelessWidget {
-  const AddAccountForm({
+class AddUserProfileScreen extends StatelessWidget {
+  const AddUserProfileScreen({
     super.key,
     required this.appState,
   });

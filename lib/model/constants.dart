@@ -1,4 +1,4 @@
-enum Screen { welcome, userProfile, signing, scanner, loading }
+enum Screen { welcome, addUserProfile, signing, scanner, loading }
 
 const storageKeyPrivateHex = "privateHexKey";
 const storageKeyUserProfiles = "userPrivateProfiles";

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:watermelon/model/profiles.dart';
 import '../model/state.dart';
 
-Future<void> deleteProfileDialog(BuildContext context, UserProfile profile) {
+Future<void> deleteProfileDialog(BuildContext context, UserProfile profile,
+    void Function() closeProfilePicker) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -29,6 +30,7 @@ Future<void> deleteProfileDialog(BuildContext context, UserProfile profile) {
             ),
             child: const Text('Delete Profile'),
             onPressed: () {
+              closeProfilePicker();
               appState.deleteProfile(profile);
               Navigator.of(context).pop();
             },

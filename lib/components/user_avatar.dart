@@ -9,8 +9,8 @@ var profileImageUrl = "https://i.pravatar.cc/200";
 
 // a Text widget that returns an npub or nothing if null
 class UserAvatar extends StatelessWidget {
-  const UserAvatar({super.key});
-
+  const UserAvatar({super.key, this.size = 80});
+  final double size;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -21,10 +21,12 @@ class UserAvatar extends StatelessWidget {
       children: [
         TextButton(
             onPressed: () {
-              appState.navigate(Screen.userProfile);
+              appState.navigate(Screen.addUserProfile);
             },
             child: SizedBox(
-                width: 80, height: 80, child: Image.network(profileImageUrl))),
+                width: size,
+                height: size,
+                child: Image.network(profileImageUrl))),
       ],
     );
     // }
