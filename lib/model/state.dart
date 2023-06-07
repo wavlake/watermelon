@@ -106,7 +106,9 @@ class AppState with ChangeNotifier {
     unsecurePrivateHexKey = _keyGenerator.generatePrivateKey();
     var nsec = _nip19.nsecEncode(unsecurePrivateHexKey);
     nsecController.text = nsec;
-    notifyListeners();
+
+    // add the profile
+    addNewProfile();
   }
 
   void clearNsecField() {

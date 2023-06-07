@@ -128,34 +128,12 @@ class AddAccountForm extends StatelessWidget {
             const TopBackButton(
               title: "Add an Account",
             ),
-            SizedBox(
-              height: 180,
+            Padding(
+              padding: const EdgeInsets.all(25.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                      "If you already have a nostr key, please enter it below, otherwise, please click on the button below to generate a new key"),
-                  TextFormField(
-                    controller: appState.nsecController,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: "nsec / hex private key",
-                      suffixIcon: IconButton(
-                        onPressed: appState.clearNsecField,
-                        icon: const Icon(Icons.remove_red_eye_outlined),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Key is required';
-                      }
-                      if (!appState.isValidNsec(value)) {
-                        return 'Please enter a valid key';
-                      }
-
-                      return null;
-                    },
-                  ),
+                  NsecInput(appState: appState),
                   ElevatedButton(
                     onPressed: () {
                       if (appState.formKey.currentState!.validate()) {
@@ -177,11 +155,62 @@ class AddAccountForm extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: TextButton(
                       onPressed: appState.generateNewNsec,
-                      child: const Text("Generate New Key")),
+                      child: const Text("Generate a new key")),
                 ),
               ],
             ),
           ],
         ));
+  }
+}
+
+class NsecInput extends StatefulWidget {
+  const NsecInput({
+    super.key,
+    required this.appState,
+  });
+
+  final AppState appState;
+
+  @override
+  State<NsecInput> createState() => _NsecInputState();
+}
+
+class _NsecInputState extends State<NsecInput> {
+  bool isObscured = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: TextFormField(
+        controller: widget.appState.nsecController,
+        obscureText: isObscured,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: "nsec",
+          suffixIcon: IconButton(
+            onPressed: () {
+              setState(() {
+                isObscured = !isObscured;
+              });
+            },
+            icon: isObscured
+                ? const Icon(Icons.visibility)
+                : const Icon(Icons.visibility_off),
+          ),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Key is required';
+          }
+          if (!widget.appState.isValidNsec(value)) {
+            return 'Please enter a valid key';
+          }
+
+          return null;
+        },
+      ),
+    );
   }
 }
