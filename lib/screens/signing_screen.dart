@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../components/user_avatar.dart';
 import '../model/constants.dart';
 import '../model/state.dart';
 
@@ -12,13 +11,28 @@ class SigningScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
+    void handleSignEvent() async {
+      bool isSuccess = await appState.signEvent();
+
+      // need to check if context.mounted is true before passing context
+      // https://stackoverflow.com/questions/68871880/do-not-use-buildcontexts-across-async-gaps
+      if (isSuccess && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event Signed')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event Signing Failed')),
+        );
+      }
+    }
+
     return Form(
         key: appState.formKey,
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const UserAvatar(),
               SizedBox(
                 height: 300,
                 child: Column(
@@ -43,9 +57,7 @@ class SigningScreen extends StatelessWidget {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {
-                            appState.signEvent();
-                          },
+                          onPressed: handleSignEvent,
                           child: const Text('Sign & Publish'),
                         ),
                       ],

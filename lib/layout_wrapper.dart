@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watermelon/model/constants.dart';
 import '/screens/userProfile/user_profile_screen.dart';
 
 class LayoutWrapper extends StatefulWidget {
@@ -13,11 +14,18 @@ class LayoutWrapper extends StatefulWidget {
 }
 
 class _LayoutWrapperState extends State<LayoutWrapper> {
-  bool showProfilePicker = true;
+  bool showProfilePicker = false;
 
-  void toggleProfilePicker() {
+  /// accepts an optional boolean value, defaults to toggle
+  void closeProfilePicker() {
     setState(() {
-      showProfilePicker = !showProfilePicker;
+      showProfilePicker = false;
+    });
+  }
+
+  void openProfilePicker() {
+    setState(() {
+      showProfilePicker = true;
     });
   }
 
@@ -28,7 +36,7 @@ class _LayoutWrapperState extends State<LayoutWrapper> {
     // The container for the current page, with its background color
     // and subtle switching animation.
     var mainArea = ColoredBox(
-      color: colorScheme.surfaceVariant,
+      color: WavlakeColors.beige,
       child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: Stack(
@@ -36,11 +44,10 @@ class _LayoutWrapperState extends State<LayoutWrapper> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Watermelon signing app"),
                   widget.page,
                   TextButton(
                       onPressed: () {
-                        toggleProfilePicker();
+                        openProfilePicker();
                       },
                       child: const Text("Switch profile"))
                 ],
@@ -54,11 +61,12 @@ class _LayoutWrapperState extends State<LayoutWrapper> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        decoration: const BoxDecoration(color: Colors.pink),
+                        decoration:
+                            const BoxDecoration(color: WavlakeColors.mint),
                         child: SizedBox(
                           width: 350,
                           child: UserProfileScreen(
-                            closeProfilePicker: toggleProfilePicker,
+                            closeProfilePicker: closeProfilePicker,
                           ),
                         ),
                       )

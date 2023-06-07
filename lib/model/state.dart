@@ -276,10 +276,15 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<nostr.Event> signEvent() async {
+  /// Signs the scannedEvent that is currently in appState
+  /// Returns true if the event was signed and published
+  /// Returns false if there was an error or no event available to sign
+  Future<bool> signEvent() async {
     if (scannedEvent == null || activeProfile == null) {
       // sign event page should only be exposed if there is a private key to use
-      throw UnimplementedError('Event or private key is null');
+      debugPrint('Event or private key is null');
+      // bail and dont do anything
+      return false;
     } else {
       // activeProfile is nullable, but we checked for that above
       var privateKeyMap = await _readSecretKeyMap();
@@ -287,7 +292,8 @@ class AppState with ChangeNotifier {
       var hexSigningKey = _nip19.decode(nsecKey!)['data'];
 
       if (hexSigningKey == null) {
-        throw UnimplementedError('Error getting private key');
+        debugPrint('Error getting private key');
+        return false;
       }
 
       // sign the event
@@ -300,13 +306,14 @@ class AppState with ChangeNotifier {
         privkey: hexSigningKey,
       );
       if (!signedEvent.isValid()) {
-        throw UnimplementedError('Error signing event');
+        debugPrint('Error signing event');
+        return false;
       }
 
       await publishEvent(signedEvent);
 
       notifyListeners();
-      return signedEvent;
+      return true;
     }
   }
 
