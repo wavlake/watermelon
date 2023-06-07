@@ -11,7 +11,7 @@ Future<void> deleteProfileDialog(BuildContext context, UserProfile profile) {
       return AlertDialog(
         title: const Text('Delete profile'),
         content: const Text(
-          "This will delete the profile from your device. Please ensure you have backed up the private key.",
+          "This will delete the profile from your device. Please ensure you have backed up the private key before deleting. This key cannot be recovered once deleted.",
         ),
         actions: <Widget>[
           TextButton(
