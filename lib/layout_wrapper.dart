@@ -44,11 +44,14 @@ class _LayoutWrapperState extends State<LayoutWrapper> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 widget.page,
-                TextButton(
-                    onPressed: () {
-                      openProfilePicker();
-                    },
-                    child: const Text("Switch profile"))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: TextButton(
+                      onPressed: () {
+                        openProfilePicker();
+                      },
+                      child: const Text("Switch profile")),
+                )
               ],
             ),
           )),
@@ -60,6 +63,8 @@ class _LayoutWrapperState extends State<LayoutWrapper> {
           return Stack(
             children: [
               mainArea,
+              // The stack widget lets us display the profile picker on top of the mainArea widget
+              // if showProfilePicker is true, we spread the contents of the array below "...[]"
               if (showProfilePicker) ...[
                 Opacity(
                   opacity: 0.4,
@@ -84,9 +89,11 @@ class _LayoutWrapperState extends State<LayoutWrapper> {
                         decoration:
                             const BoxDecoration(color: WavlakeColors.mint),
                         child: SizedBox(
-                          width: 350,
-                          child: UserProfileScreen(
-                            closeProfilePicker: closeProfilePicker,
+                          width: MediaQuery.of(context).size.width,
+                          child: SafeArea(
+                            child: UserProfileScreen(
+                              closeProfilePicker: closeProfilePicker,
+                            ),
                           ),
                         ),
                       )

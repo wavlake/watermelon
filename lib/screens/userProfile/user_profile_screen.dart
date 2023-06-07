@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:watermelon/model/constants.dart';
 
 import 'profile_row.dart';
-import '../../components/delete_all_data_dialog.dart';
 import '../../model/state.dart';
 
 class UserProfileScreen extends StatelessWidget {
@@ -21,7 +20,10 @@ class UserProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("Select Account"),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 15.0),
+              child: Text("Select Account"),
+            ),
             ...appState.userProfiles.isEmpty
                 ? [const Text("Please add an account...")]
                 : appState.userProfiles.map((profile) {
@@ -30,7 +32,7 @@ class UserProfileScreen extends StatelessWidget {
                         closeProfilePicker: closeProfilePicker);
                   }).toList(),
             Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
+              padding: const EdgeInsets.only(top: 15.0, bottom: 8.0),
               child: ElevatedButton(
                   onPressed: () {
                     closeProfilePicker();

@@ -11,6 +11,7 @@ import 'screens/loading_screen.dart';
 import 'model/state.dart';
 import 'package:flutter/services.dart'; // For `SystemChrome`
 
+// https://dartling.dev/toggle-full-screen-mode-in-flutter#heading-types-of-full-screen-modes
 void enterFullScreen() {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 }
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primarySwatch: Colors.pink, fontFamily: 'Roboto'),
+      theme: ThemeData(primarySwatch: Colors.pink, fontFamily: 'Poppins'),
       debugShowCheckedModeBanner: false,
       title: 'dispute',
       home: _MyHomePage(),
