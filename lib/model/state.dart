@@ -274,20 +274,21 @@ class AppState with ChangeNotifier {
     } else {
       // activeProfile is nullable, but we checked for that above
       var privateKeyMap = await _readSecretKeyMap();
-      var signingKey = privateKeyMap[activeProfile!.npub];
+      var nsecKey = privateKeyMap[activeProfile!.npub];
+      var hexSigningKey = _nip19.decode(nsecKey!)['data'];
 
-      if (signingKey == null) {
+      if (hexSigningKey == null) {
         throw UnimplementedError('Error getting private key');
       }
 
       // sign the event
       // any pubkey in the unsigned event is ignored
       var signedEvent = nostr.Event.from(
-        createdAt: scannedEvent!.createdAt,
+        // createdAt: scannedEvent!.createdAt,
         kind: scannedEvent!.kind,
         tags: scannedEvent!.tags,
         content: scannedEvent!.content,
-        privkey: signingKey,
+        privkey: hexSigningKey,
       );
       if (!signedEvent.isValid()) {
         throw UnimplementedError('Error signing event');
