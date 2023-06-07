@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../model/profiles.dart';
 import '../../model/state.dart';
 
+// This is currently not used anywhere, but it's a good example of how to create a custom button.
 class WavlakeIconButton extends StatelessWidget {
   const WavlakeIconButton({
     super.key,

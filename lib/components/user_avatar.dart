@@ -29,10 +29,5 @@ class UserAvatar extends StatelessWidget {
                 child: Image.network(profileImageUrl))),
       ],
     );
-    // }
-
-    // if no npub, return "nothing"
-    // https://stackoverflow.com/questions/53455358/how-to-present-an-empty-view-in-flutter
-    return const SizedBox.shrink();
   }
 }

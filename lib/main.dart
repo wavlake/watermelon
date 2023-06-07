@@ -9,10 +9,21 @@ import 'screens/welcome_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'screens/loading_screen.dart';
 import 'model/state.dart';
+import 'package:flutter/services.dart'; // For `SystemChrome`
+
+void enterFullScreen() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+}
+
+void exitFullScreen() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+      overlays: SystemUiOverlay.values);
+}
 
 void main() async {
   // init local storage, used by AppState provider
   await GetStorage.init();
+  enterFullScreen();
   runApp(
     MultiProvider(
       providers: [

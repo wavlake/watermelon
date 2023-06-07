@@ -29,12 +29,15 @@ class UserProfileScreen extends StatelessWidget {
                         profile: profile,
                         closeProfilePicker: closeProfilePicker);
                   }).toList(),
-            ElevatedButton(
-                onPressed: () {
-                  closeProfilePicker();
-                  appState.navigate(Screen.addUserProfile);
-                },
-                child: const Text("Add New Account")),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: ElevatedButton(
+                  onPressed: () {
+                    closeProfilePicker();
+                    appState.navigate(Screen.addUserProfile);
+                  },
+                  child: const Text("Add New Account")),
+            ),
           ]),
     );
   }

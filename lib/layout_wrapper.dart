@@ -35,24 +35,44 @@ class _LayoutWrapperState extends State<LayoutWrapper> {
 
     // The container for the current page, with its background color
     // and subtle switching animation.
-    var mainArea = ColoredBox(
-      color: WavlakeColors.beige,
-      child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: Stack(
+    var mainArea = SafeArea(
+      child: ColoredBox(
+          color: WavlakeColors.beige,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                widget.page,
+                TextButton(
+                    onPressed: () {
+                      openProfilePicker();
+                    },
+                    child: const Text("Switch profile"))
+              ],
+            ),
+          )),
+    );
+
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  widget.page,
-                  TextButton(
-                      onPressed: () {
-                        openProfilePicker();
-                      },
-                      child: const Text("Switch profile"))
-                ],
-              ),
-              if (showProfilePicker)
+              mainArea,
+              if (showProfilePicker) ...[
+                Opacity(
+                  opacity: 0.4,
+                  child: InkWell(
+                    onTap: closeProfilePicker,
+                    child: Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      decoration:
+                          const BoxDecoration(color: WavlakeColors.black),
+                    ),
+                  ),
+                ),
                 Positioned(
                   left: 0,
                   right: 0,
@@ -73,14 +93,9 @@ class _LayoutWrapperState extends State<LayoutWrapper> {
                     ],
                   ),
                 ),
+              ],
             ],
-          )),
-    );
-
-    return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SafeArea(child: mainArea);
+          );
         },
       ),
     );
