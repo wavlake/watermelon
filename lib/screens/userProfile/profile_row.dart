@@ -21,8 +21,8 @@ class ProfileRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: InkWell(
         onTap: () => {
-          closeProfilePicker(),
           appState.makeProfileActive(profile),
+          closeProfilePicker(),
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,9 +46,12 @@ class ProfileRow extends StatelessWidget {
                           size: 20.0,
                         ),
                       ),
-                UserAvatar(
-                  size: 30,
-                  profile: profile,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: UserAvatar(
+                    size: 30,
+                    profile: profile,
+                  ),
                 ),
                 Text(profile.label),
               ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../components/user_avatar.dart';
 import '../model/constants.dart';
 import '../model/state.dart';
 
@@ -30,8 +31,18 @@ class SigningScreen extends StatelessWidget {
     return Form(
       key: appState.formKey,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.only(right: 30.0, bottom: 40, top: 40),
+                child: UserAvatar(profile: appState.editingProfile!),
+              ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Container(
@@ -56,7 +67,7 @@ class SigningScreen extends StatelessWidget {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
                 onPressed: () {

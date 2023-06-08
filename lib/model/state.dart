@@ -387,7 +387,6 @@ class AppState with ChangeNotifier {
       aOptions: _getAndroidOptions(),
     );
     if (value == null) {
-      print('value is null');
       return {};
     }
     Map<String, dynamic> map = jsonDecode(value);

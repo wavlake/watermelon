@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watermelon/components/top_back_button.dart';
-import 'package:watermelon/model/user_profile.dart';
+import 'package:watermelon/components/user_avatar.dart';
 
 import '../../model/state.dart';
 import 'label_input.dart';
@@ -12,18 +12,30 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
-    UserProfile profile = appState.editingProfile!;
 
-    print(profile.label);
     // profile list view
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const TopBackButton(
           title: "Edit Account",
         ),
-        LabelInput(appState: appState),
-        ElevatedButton(
-            onPressed: appState.saveLabel, child: const Text("Save")),
+        Column(
+          children: [
+            UserAvatar(profile: appState.editingProfile!),
+            Padding(
+              padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+              child:
+                  Text("${appState.editingProfile!.npub.substring(0, 18)}..."),
+            ),
+            LabelInput(appState: appState),
+            ElevatedButton(
+                onPressed: appState.saveLabel, child: const Text("Save")),
+          ],
+        ),
+        // this is a hack to move the above Column sibling to the center
+        const SizedBox.shrink()
       ],
     );
   }
