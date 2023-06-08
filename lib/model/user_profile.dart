@@ -13,8 +13,8 @@ class UserProfile {
     isActive = active;
   }
 
-  setLabel(String label) {
-    label = label;
+  setLabel(String newLabel) {
+    label = newLabel;
   }
 
   String npub;

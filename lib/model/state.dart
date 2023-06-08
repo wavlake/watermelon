@@ -184,6 +184,7 @@ class AppState with ChangeNotifier {
 
   Future<void> editProfile(UserProfile profile, String label) async {
     try {
+      // update the label
       profile.setLabel(label);
 
       // json encode for storage
