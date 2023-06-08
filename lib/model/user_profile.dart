@@ -19,6 +19,9 @@ class UserProfile {
 
   String npub;
   String label;
+  // fake profile image url, update to pull from relay
+  // https://github.com/nostr-protocol/nips/blob/master/01.md#basic-event-kinds
+  String profileUrl = "https://i.pravatar.cc/200";
   bool isActive = false;
 
   Map<String, dynamic> toJson() {

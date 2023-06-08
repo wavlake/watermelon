@@ -15,10 +15,10 @@ class UserProfileScreen extends StatelessWidget {
 
     // profile list view
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Padding(
               padding: EdgeInsets.only(bottom: 15.0),
@@ -35,6 +35,8 @@ class UserProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.only(top: 15.0, bottom: 8.0),
               child: ElevatedButton(
                   onPressed: () {
+                    appState.labelController.clear();
+                    appState.nsecController.clear();
                     appState.navigate(Screen.addUserProfile);
                   },
                   child: const Text("Add New Account")),

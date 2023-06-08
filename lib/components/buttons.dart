@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../model/profiles.dart';
+import '../model/user_profile.dart';
 import '../../model/state.dart';
 
 // This is currently not used anywhere, but it's a good example of how to create a custom button.

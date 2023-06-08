@@ -1,6 +1,6 @@
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:watermelon/model/profiles.dart';
+import 'package:watermelon/model/user_profile.dart';
 import '../model/state.dart';
 
 Future<void> deleteProfileDialog(BuildContext context, UserProfile profile,

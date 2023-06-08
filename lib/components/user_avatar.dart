@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:watermelon/model/user_profile.dart';
 import '../model/constants.dart';
 import '../model/state.dart';
 import 'package:provider/provider.dart';
 
-// fake profile image url, update to pull from relay
-// https://github.com/nostr-protocol/nips/blob/master/01.md#basic-event-kinds
-var profileImageUrl = "https://i.pravatar.cc/200";
-
-// a Text widget that returns an npub or nothing if null
 class UserAvatar extends StatelessWidget {
-  const UserAvatar({super.key, this.size = 80});
+  const UserAvatar({super.key, this.size = 80, required this.profile});
   final double size;
+  final UserProfile profile;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -21,12 +18,13 @@ class UserAvatar extends StatelessWidget {
       children: [
         TextButton(
             onPressed: () {
-              appState.navigate(Screen.addUserProfile);
+              appState.setEditingProfile(profile);
+              appState.navigate(Screen.editUserProfile);
             },
             child: SizedBox(
                 width: size,
                 height: size,
-                child: Image.network(profileImageUrl))),
+                child: Image.network(profile.profileUrl))),
       ],
     );
   }

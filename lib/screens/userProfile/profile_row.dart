@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watermelon/components/user_avatar.dart';
-import 'package:watermelon/model/constants.dart';
 
 import '../../components/delete_profile_dialog.dart';
-import '../../model/profiles.dart';
+import '../../model/user_profile.dart';
 import '../../model/state.dart';
 
 class ProfileRow extends StatelessWidget {
@@ -27,7 +26,10 @@ class ProfileRow extends StatelessWidget {
         children: [
           Row(
             children: [
-              const UserAvatar(size: 30),
+              UserAvatar(
+                size: 30,
+                profile: profile,
+              ),
               Text(profile.label),
             ],
           ),

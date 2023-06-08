@@ -2,7 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-enum Screen { welcome, addUserProfile, signing, scanner, loading }
+enum Screen {
+  welcome,
+  addUserProfile,
+  signing,
+  scanner,
+  loading,
+  editUserProfile
+}
 
 const storageKeyPrivateHex = "privateHexKey";
 const storageKeyUserProfiles = "userPrivateProfiles";
@@ -15,6 +22,7 @@ const Map<Screen, bool> shouldShowProfileSwitchButton = {
   Screen.signing: true,
   Screen.scanner: true,
   Screen.loading: false,
+  Screen.editUserProfile: false,
 };
 
 // https://stackoverflow.com/questions/50081213/how-do-i-use-hexadecimal-color-strings-in-flutter

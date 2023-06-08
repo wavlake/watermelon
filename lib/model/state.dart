@@ -7,7 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'profiles.dart';
+import 'user_profile.dart';
 import 'constants.dart';
 
 final _keyGenerator = KeyApi();
@@ -44,9 +44,21 @@ class AppState with ChangeNotifier {
   String loadingText = "";
   String unsecurePrivateHexKey = "";
   TextEditingController nsecController = TextEditingController();
+  TextEditingController labelController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String relayAddress = "wss://relay.wavlake.com";
   bool showProfileSelector = false;
+  UserProfile? editingProfile;
+
+  void setEditingProfile(UserProfile profile) {
+    editingProfile = profile;
+    labelController.text = profile.label;
+  }
+
+  void saveLabel() {
+    editProfile(editingProfile!, labelController.text);
+    navigate(Screen.signing);
+  }
 
   /// The user profile that is currently active, can be null
   UserProfile? get activeProfile {
@@ -96,6 +108,11 @@ class AppState with ChangeNotifier {
 
   /// A method to navigate to a new screen
   void navigate(Screen newScreen) {
+    if (newScreen == Screen.editUserProfile && editingProfile == null) {
+      debugPrint(
+          "Error: no profile to edit, did you forget to call setEditingProfile");
+      return;
+    }
     // update the state
     currentScreen = newScreen;
     notifyListeners();
@@ -184,11 +201,14 @@ class AppState with ChangeNotifier {
 
   Future<void> addNewProfile() async {
     try {
+      var label = labelController.text.isEmpty
+          ? "New Profile ${userProfiles.length + 1}"
+          : labelController.text;
       var newNsec = nsecController.text;
       var newNpub = nsecToNpub(newNsec);
       var newUserProfile = UserProfile(
         npub: newNpub,
-        label: "New Profile",
+        label: label,
       );
       // if there is not activeProfile
       if (activeProfile == null) {

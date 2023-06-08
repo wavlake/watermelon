@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:watermelon/screens/add_user_profile_screen.dart';
-import 'package:watermelon/screens/userProfile/user_profile_screen.dart';
+import 'screens/userProfile/add_user_profile_screen.dart';
+import 'screens/userProfile/edit_profile_screen.dart';
+import 'screens/userProfile/user_profile_screen.dart';
 import 'model/constants.dart';
 import 'screens/signing_screen.dart';
 import 'screens/welcome_screen.dart';
@@ -61,7 +62,6 @@ class _MyHomePageState extends State<_MyHomePage> {
   bool showProfilePicker = false;
 
   void closeProfilePicker() {
-    print("closeProfilePicker");
     setState(() {
       showProfilePicker = false;
     });
@@ -80,7 +80,6 @@ class _MyHomePageState extends State<_MyHomePage> {
 
     bool shouldShowProfilePicker = showProfilePicker &&
         shouldShowProfileSwitchButton[appState.currentScreen]!;
-    print(showProfilePicker);
 
     Widget page;
     switch (appState.currentScreen) {
@@ -100,6 +99,9 @@ class _MyHomePageState extends State<_MyHomePage> {
         break;
       case Screen.loading:
         page = const LoadingScreen();
+        break;
+      case Screen.editUserProfile:
+        page = const EditProfileScreen();
         break;
       default:
         throw UnimplementedError('no widget for ${appState.currentScreen}');
