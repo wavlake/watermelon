@@ -35,7 +35,6 @@ class UserProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.only(top: 15.0, bottom: 8.0),
               child: ElevatedButton(
                   onPressed: () {
-                    closeProfilePicker();
                     appState.navigate(Screen.addUserProfile);
                   },
                   child: const Text("Add New Account")),

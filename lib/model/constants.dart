@@ -9,6 +9,14 @@ const storageKeyUserProfiles = "userPrivateProfiles";
 const secureNpubNsecMap = "npubNsecMap";
 const publicProfileInfo = "userProfiles";
 
+const Map<Screen, bool> shouldShowProfileSwitchButton = {
+  Screen.welcome: false,
+  Screen.addUserProfile: false,
+  Screen.signing: true,
+  Screen.scanner: true,
+  Screen.loading: false,
+};
+
 // https://stackoverflow.com/questions/50081213/how-do-i-use-hexadecimal-color-strings-in-flutter
 abstract class WavlakeColors {
   static const Color pink = Color(0xFFf3aef2);

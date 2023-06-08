@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 // Every screen gets a default back button target
 Map<Screen, Screen> backButtonMap = {
   Screen.welcome: Screen.welcome,
-  Screen.addUserProfile: Screen.welcome,
+  Screen.addUserProfile: Screen.signing,
   Screen.signing: Screen.addUserProfile,
   Screen.scanner: Screen.signing,
 };

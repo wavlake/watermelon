@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../components.dart';
+import '../components/top_back_button.dart';
 import '../model/state.dart';
 
 class AddUserProfileScreen extends StatelessWidget {
   const AddUserProfileScreen({
     super.key,
-    required this.appState,
+    required this.closeProfilePicker,
   });
 
-  final AppState appState;
+  final void Function() closeProfilePicker;
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+
     return Form(
         key: appState.formKey,
         child: Column(
@@ -31,6 +34,8 @@ class AddUserProfileScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       if (appState.formKey.currentState!.validate()) {
+                        print("valid");
+                        closeProfilePicker();
                         appState.addNewProfile();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -48,7 +53,10 @@ class AddUserProfileScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: TextButton(
-                      onPressed: appState.generateNewNsec,
+                      onPressed: () {
+                        closeProfilePicker();
+                        appState.generateNewNsec();
+                      },
                       child: const Text("Generate a new key")),
                 ),
               ],

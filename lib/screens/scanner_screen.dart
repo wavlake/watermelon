@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 
-import '../components.dart';
+import '../components/top_back_button.dart';
 import '../model/state.dart';
 
 class ScannerScreen extends StatelessWidget {
