@@ -15,13 +15,13 @@ class ProfilePicker extends StatelessWidget {
 
     // profile list view
     return Padding(
-      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+      padding: const EdgeInsets.only(bottom: 50, left: 15.0, right: 15.0),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Padding(
-              padding: EdgeInsets.only(bottom: 15.0),
+              padding: EdgeInsets.only(bottom: 15.0, top: 15.0),
               child: Text("Select Account"),
             ),
             ...appState.userProfiles.isEmpty

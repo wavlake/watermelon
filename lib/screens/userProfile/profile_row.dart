@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watermelon/components/user_avatar.dart';
+import 'package:watermelon/model/constants.dart';
 
 import '../../components/delete_profile_dialog.dart';
 import '../../model/user_profile.dart';
@@ -16,54 +17,67 @@ class ProfileRow extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    return InkWell(
-      onTap: () => {
-        closeProfilePicker(),
-        appState.makeProfileActive(profile),
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              UserAvatar(
-                size: 30,
-                profile: profile,
-              ),
-              Text(profile.label),
-            ],
-          ),
-          Row(
-            children: [
-              profile.isActive
-                  ? const Opacity(
-                      opacity: 1,
-                      child: Icon(
-                        Icons.circle,
-                        // TODO - add wavlake colors
-                        color: Color.fromARGB(255, 241, 119, 160),
-                        size: 20.0,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: InkWell(
+        onTap: () => {
+          closeProfilePicker(),
+          appState.makeProfileActive(profile),
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                profile.isActive
+                    ? const Opacity(
+                        opacity: 1,
+                        child: Icon(
+                          Icons.circle,
+                          // TODO - add wavlake colors
+                          color: WavlakeColors.mint,
+                          size: 20.0,
+                        ),
+                      )
+                    : const Opacity(
+                        opacity: 0.3,
+                        child: Icon(
+                          Icons.circle,
+                          color: Colors.grey,
+                          size: 20.0,
+                        ),
                       ),
-                    )
-                  : const Opacity(
-                      opacity: 0.3,
-                      child: Icon(
-                        Icons.circle,
-                        color: Colors.grey,
-                        size: 20.0,
-                      ),
-                    ),
-              TextButton(
-                  onPressed: () =>
-                      deleteProfileDialog(context, profile, closeProfilePicker),
-                  child: const Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                    size: 20.0,
-                  )),
-            ],
-          ),
-        ],
+                UserAvatar(
+                  size: 30,
+                  profile: profile,
+                ),
+                Text(profile.label),
+              ],
+            ),
+            Row(
+              children: [
+                TextButton(
+                    onPressed: () => {
+                          appState.setEditingProfile(profile),
+                          appState.navigate(Screen.editUserProfile),
+                        },
+                    child: const Icon(
+                      Icons.edit,
+                      color: WavlakeColors.mint,
+                      size: 20.0,
+                    )),
+                TextButton(
+                    onPressed: () => deleteProfileDialog(
+                        context, profile, closeProfilePicker),
+                    child: const Icon(
+                      Icons.delete,
+                      color: WavlakeColors.orange,
+                      size: 20.0,
+                    )),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

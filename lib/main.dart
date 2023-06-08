@@ -212,10 +212,8 @@ class _MyHomePageState extends State<_MyHomePage> {
                                     color: colorScheme.secondary, width: 2.0))),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          child: SafeArea(
-                            child: ProfilePicker(
-                              closeProfilePicker: closeProfilePicker,
-                            ),
+                          child: ProfilePicker(
+                            closeProfilePicker: closeProfilePicker,
                           ),
                         ),
                       )
