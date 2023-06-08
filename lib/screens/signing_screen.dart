@@ -28,43 +28,55 @@ class SigningScreen extends StatelessWidget {
     }
 
     return Form(
-        key: appState.formKey,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
+      key: appState.formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border.all(color: WavlakeColors.purple)),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: RichText(
+                        text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            text: appState.prettyEventString),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                height: 300,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ElevatedButton(
+                onPressed: () {
+                  appState.navigate(Screen.scanner);
+                },
+                child: const Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(appState.prettyEventString),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            appState.navigate(Screen.scanner);
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(Icons.qr_code_scanner),
-                              Text('Scan Event'),
-                            ],
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: handleSignEvent,
-                          child: const Text('Sign & Publish'),
-                        ),
-                      ],
-                    ),
+                    Icon(Icons.qr_code_scanner),
+                    Text('Scan Event'),
                   ],
                 ),
               ),
-            ]));
+              ElevatedButton(
+                onPressed: handleSignEvent,
+                child: const Text('Sign & Publish'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

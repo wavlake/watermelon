@@ -164,10 +164,12 @@ class _MyHomePageState extends State<_MyHomePage> {
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       // page is a dynamic widget that changes based on currentScreen
-                      page,
+                      Expanded(
+                        child: page,
+                      ),
                       // Should this screen show the switch profile button?
                       ...shouldShowProfileSwitchButton[appState.currentScreen]!
                           ? [

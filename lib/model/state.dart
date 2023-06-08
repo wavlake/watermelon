@@ -284,7 +284,7 @@ class AppState with ChangeNotifier {
       if (jsonEvent["sig"] == null) {
         // This is overwritten when the user signs the event
         // can we skip this????
-        jsonEvent["sig"] = "Tap sign to sign this event";
+        jsonEvent["sig"] = "Tap sign to sign this event and add your signature";
       }
       // don't verify the event, since the sig is invalid
       scannedEvent = nostr.Event.fromJson(jsonEvent, verify: false);
