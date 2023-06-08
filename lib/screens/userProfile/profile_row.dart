@@ -17,24 +17,24 @@ class ProfileRow extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            const UserAvatar(size: 30),
-            TextButton(
-                onPressed: () {
-                  appState.makeProfileActive(profile);
-                },
-                child: Text(profile.label)),
-          ],
-        ),
-        Row(
-          children: [
-            profile.isActive
-                ? TextButton(
-                    child: const Opacity(
+    return InkWell(
+      onTap: () => {
+        closeProfilePicker(),
+        appState.makeProfileActive(profile),
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const UserAvatar(size: 30),
+              Text(profile.label),
+            ],
+          ),
+          Row(
+            children: [
+              profile.isActive
+                  ? const Opacity(
                       opacity: 1,
                       child: Icon(
                         Icons.circle,
@@ -42,13 +42,8 @@ class ProfileRow extends StatelessWidget {
                         color: Color.fromARGB(255, 241, 119, 160),
                         size: 20.0,
                       ),
-                    ),
-                    onPressed: () {
-                      closeProfilePicker();
-                      appState.navigate(Screen.signing);
-                    })
-                : TextButton(
-                    child: const Opacity(
+                    )
+                  : const Opacity(
                       opacity: 0.3,
                       child: Icon(
                         Icons.circle,
@@ -56,21 +51,18 @@ class ProfileRow extends StatelessWidget {
                         size: 20.0,
                       ),
                     ),
-                    onPressed: () {
-                      appState.makeProfileActive(profile);
-                      closeProfilePicker();
-                    }),
-            TextButton(
-                onPressed: () =>
-                    deleteProfileDialog(context, profile, closeProfilePicker),
-                child: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                  size: 20.0,
-                )),
-          ],
-        ),
-      ],
+              TextButton(
+                  onPressed: () =>
+                      deleteProfileDialog(context, profile, closeProfilePicker),
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                    size: 20.0,
+                  )),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
