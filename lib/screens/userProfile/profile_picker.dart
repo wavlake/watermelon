@@ -5,8 +5,8 @@ import 'package:watermelon/model/constants.dart';
 import 'profile_row.dart';
 import '../../model/state.dart';
 
-class UserProfileScreen extends StatelessWidget {
-  const UserProfileScreen({super.key, required this.closeProfilePicker});
+class ProfilePicker extends StatelessWidget {
+  const ProfilePicker({super.key, required this.closeProfilePicker});
 
   final void Function() closeProfilePicker;
   @override
