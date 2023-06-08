@@ -49,6 +49,11 @@ class MyApp extends StatelessWidget {
         // Define the default brightness and colors.
         primaryColor: WavlakeColors.orange,
         secondaryHeaderColor: WavlakeColors.mint,
+        snackBarTheme: const SnackBarThemeData(
+          backgroundColor: WavlakeColors.orange,
+          contentTextStyle: TextStyle(color: WavlakeColors.black),
+          actionTextColor: WavlakeColors.black,
+        ),
         cardColor: WavlakeColors.orange,
         buttonTheme: const ButtonThemeData(
           buttonColor: WavlakeColors.mint,

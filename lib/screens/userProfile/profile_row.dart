@@ -34,7 +34,6 @@ class ProfileRow extends StatelessWidget {
                         opacity: 1,
                         child: Icon(
                           Icons.circle,
-                          // TODO - add wavlake colors
                           color: WavlakeColors.mint,
                           size: 20.0,
                         ),
