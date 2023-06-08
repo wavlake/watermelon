@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:watermelon/model/user_profile.dart';
 import '../model/constants.dart';
 import '../model/state.dart';
 import 'package:provider/provider.dart';
 
-// fake profile image url, update to pull from relay
-// https://github.com/nostr-protocol/nips/blob/master/01.md#basic-event-kinds
-var profileImageUrl = "https://i.pravatar.cc/200";
-
-// a Text widget that returns an npub or nothing if null
 class UserAvatar extends StatelessWidget {
-  const UserAvatar({super.key});
-
+  const UserAvatar({super.key, this.size = 80, required this.profile});
+  final double size;
+  final UserProfile profile;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -21,16 +18,14 @@ class UserAvatar extends StatelessWidget {
       children: [
         TextButton(
             onPressed: () {
-              appState.navigate(Screen.userProfile);
+              appState.setEditingProfile(profile);
+              appState.navigate(Screen.editUserProfile);
             },
             child: SizedBox(
-                width: 80, height: 80, child: Image.network(profileImageUrl))),
+                width: size,
+                height: size,
+                child: Image.network(profile.profileUrl))),
       ],
     );
-    // }
-
-    // if no npub, return "nothing"
-    // https://stackoverflow.com/questions/53455358/how-to-present-an-empty-view-in-flutter
-    return const SizedBox.shrink();
   }
 }

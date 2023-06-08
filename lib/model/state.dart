@@ -7,7 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'profiles.dart';
+import 'user_profile.dart';
 import 'constants.dart';
 
 final _keyGenerator = KeyApi();
@@ -44,8 +44,21 @@ class AppState with ChangeNotifier {
   String loadingText = "";
   String unsecurePrivateHexKey = "";
   TextEditingController nsecController = TextEditingController();
+  TextEditingController labelController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String relayAddress = "wss://relay.wavlake.com";
+  bool showProfileSelector = false;
+  UserProfile? editingProfile;
+
+  void setEditingProfile(UserProfile profile) {
+    editingProfile = profile;
+    labelController.text = profile.label;
+  }
+
+  void saveLabel() {
+    editProfile(editingProfile!, labelController.text);
+    navigate(Screen.signing);
+  }
 
   /// The user profile that is currently active, can be null
   UserProfile? get activeProfile {
@@ -86,7 +99,7 @@ class AppState with ChangeNotifier {
 
     if (activeProfile == null) {
       // we need a profile to do anything, so show the profile page
-      navigate(Screen.userProfile);
+      navigate(Screen.addUserProfile);
     } else {
       // if there is a saved private key, navigate to the signing screen
       navigate(Screen.signing);
@@ -95,6 +108,11 @@ class AppState with ChangeNotifier {
 
   /// A method to navigate to a new screen
   void navigate(Screen newScreen) {
+    if (newScreen == Screen.editUserProfile && editingProfile == null) {
+      debugPrint(
+          "Error: no profile to edit, did you forget to call setEditingProfile");
+      return;
+    }
     // update the state
     currentScreen = newScreen;
     notifyListeners();
@@ -106,7 +124,9 @@ class AppState with ChangeNotifier {
     unsecurePrivateHexKey = _keyGenerator.generatePrivateKey();
     var nsec = _nip19.nsecEncode(unsecurePrivateHexKey);
     nsecController.text = nsec;
-    notifyListeners();
+
+    // add the profile
+    addNewProfile();
   }
 
   void clearNsecField() {
@@ -117,6 +137,12 @@ class AppState with ChangeNotifier {
 
   Future<void> deleteProfile(UserProfile profile) async {
     userProfiles.remove(profile);
+
+    // if we're deleting the active profile
+    if (profile.isActive && userProfiles.isNotEmpty) {
+      // promote the first profile to active
+      userProfiles.first.setActive(true);
+    }
     // json encode for storage
     var updatedProfiles =
         jsonEncode(userProfiles.map((e) => e.toJson()).toList());
@@ -158,6 +184,7 @@ class AppState with ChangeNotifier {
 
   Future<void> editProfile(UserProfile profile, String label) async {
     try {
+      // update the label
       profile.setLabel(label);
 
       // json encode for storage
@@ -175,11 +202,14 @@ class AppState with ChangeNotifier {
 
   Future<void> addNewProfile() async {
     try {
+      var label = labelController.text.isEmpty
+          ? "New Profile ${userProfiles.length + 1}"
+          : labelController.text;
       var newNsec = nsecController.text;
       var newNpub = nsecToNpub(newNsec);
       var newUserProfile = UserProfile(
         npub: newNpub,
-        label: "New Profile",
+        label: label,
       );
       // if there is not activeProfile
       if (activeProfile == null) {
@@ -267,10 +297,15 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<nostr.Event> signEvent() async {
+  /// Signs the scannedEvent that is currently in appState
+  /// Returns true if the event was signed and published
+  /// Returns false if there was an error or no event available to sign
+  Future<bool> signEvent() async {
     if (scannedEvent == null || activeProfile == null) {
       // sign event page should only be exposed if there is a private key to use
-      throw UnimplementedError('Event or private key is null');
+      debugPrint('Event or private key is null');
+      // bail and dont do anything
+      return false;
     } else {
       // activeProfile is nullable, but we checked for that above
       var privateKeyMap = await _readSecretKeyMap();
@@ -278,7 +313,8 @@ class AppState with ChangeNotifier {
       var hexSigningKey = _nip19.decode(nsecKey!)['data'];
 
       if (hexSigningKey == null) {
-        throw UnimplementedError('Error getting private key');
+        debugPrint('Error getting private key');
+        return false;
       }
 
       // sign the event
@@ -291,13 +327,14 @@ class AppState with ChangeNotifier {
         privkey: hexSigningKey,
       );
       if (!signedEvent.isValid()) {
-        throw UnimplementedError('Error signing event');
+        debugPrint('Error signing event');
+        return false;
       }
 
       await publishEvent(signedEvent);
 
       notifyListeners();
-      return signedEvent;
+      return true;
     }
   }
 

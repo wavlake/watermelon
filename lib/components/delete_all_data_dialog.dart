@@ -2,7 +2,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../model/state.dart';
 
-Future<void> deleteAllDataDialog(BuildContext context) {
+Future<void> deleteAllDataDialog(
+    BuildContext context, void Function() closeProfilePicker) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -28,6 +29,7 @@ Future<void> deleteAllDataDialog(BuildContext context) {
             ),
             child: const Text('Delete All Data'),
             onPressed: () {
+              closeProfilePicker();
               appState.removeAllUserData();
               Navigator.of(context).pop();
             },
