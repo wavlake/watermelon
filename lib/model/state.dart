@@ -320,7 +320,6 @@ class AppState with ChangeNotifier {
       // sign the event
       // any pubkey in the unsigned event is ignored
       var signedEvent = nostr.Event.from(
-        // createdAt: scannedEvent!.createdAt,
         kind: scannedEvent!.kind,
         tags: scannedEvent!.tags,
         content: scannedEvent!.content,
@@ -387,7 +386,7 @@ class AppState with ChangeNotifier {
       aOptions: _getAndroidOptions(),
     );
     if (value == null) {
-      print('value is null');
+      // if nothing exists yet, return an empty map
       return {};
     }
     Map<String, dynamic> map = jsonDecode(value);

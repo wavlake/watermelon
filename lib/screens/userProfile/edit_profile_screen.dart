@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watermelon/components/top_back_button.dart';
-import 'package:watermelon/model/user_profile.dart';
 
 import '../../model/state.dart';
 import 'label_input.dart';
@@ -12,9 +11,7 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
-    UserProfile profile = appState.editingProfile!;
 
-    print(profile.label);
     // profile list view
     return Column(
       children: [
