@@ -25,3 +25,19 @@ cd ios
 rm -rf Pods/
 pod install
 ```
+
+## Build an Android release
+
+First follow these steps to setup a keystore/signing files https://docs.flutter.dev/deployment/android, you should only need to do this step once.
+
+1. Update the `version` value in the project's `pubspec.yaml` file. St the very least, increment the `versionCode` by one.
+    1. This will result in the `versionName` and `versionCode` being updated in `android/local.properties`.
+    1. `versionName` is the version shown to users, while `versionCode` is "a positive integer used as an internal version number. This number helps determine whether one version is more recent than another, with higher numbers indicating more recent versions."
+    1. In `pubspec.yaml`, `version: 1.0.4+21` would translate to `versionName=1.0.4` and `versionCode=21`.
+1. Run the build command, which will produce a build here `build/app/outputs/bundle/release/app-release.aab`
+
+    ```bash
+    flutter build appbundle
+    ```
+
+1. Upload the build to the App bundle explorer in [Google Play Console](https://play.google.com/console)
