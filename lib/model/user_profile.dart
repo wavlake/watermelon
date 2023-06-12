@@ -5,8 +5,6 @@ class UserProfile {
       required this.label,
       bool? isActive = false,
       String? profileUrl}) {
-    // var privateHex = _nip19.decode(nsec)['data'];
-    // var publicHex = _keyGenerator.getPublicKey(privateHex);
     npub = npub;
     isActive = isActive;
     label = label;
@@ -27,9 +25,6 @@ class UserProfile {
 
   String npub;
   String label;
-  // fake profile image url, update to pull from relay
-  // https://github.com/nostr-protocol/nips/blob/master/01.md#basic-event-kinds
-  // String profileUrl = "https://i.pravatar.cc/200";
   String? profileUrl;
   String defaultProfileUrl = "assets/wavlake.png";
   bool isActive = false;

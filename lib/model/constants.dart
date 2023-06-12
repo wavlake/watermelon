@@ -11,10 +11,16 @@ enum Screen {
   editUserProfile
 }
 
+/// deprecated keys
 const storageKeyPrivateHex = "privateHexKey";
 const storageKeyUserProfiles = "userPrivateProfiles";
+
+String wavlakeRelay = "wss://relay.wavlake.com";
+
 const secureNpubNsecMap = "npubNsecMap";
 const publicProfileInfo = "userProfiles";
+const publicRelayList = "relayList";
+const hasSeenWelcomeScreen = "hasSeenWelcomeScreen";
 
 const Map<Screen, bool> shouldShowProfileSwitchButton = {
   Screen.welcome: false,

@@ -43,12 +43,11 @@ class SigningScreen extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.8,
                   height: MediaQuery.of(context).size.height * 0.4,
                   child: SingleChildScrollView(
-                    child: Center(
-                      child: RichText(
-                        text: TextSpan(
-                            style: DefaultTextStyle.of(context).style,
-                            text: appState.prettyEventString),
-                      ),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          text: appState.prettyEventString),
                     ),
                   ),
                 ),
@@ -56,7 +55,7 @@ class SigningScreen extends StatelessWidget {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
                 onPressed: () {

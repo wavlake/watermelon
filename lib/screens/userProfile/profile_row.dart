@@ -19,7 +19,7 @@ class ProfileRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
+      child: GestureDetector(
         onTap: () => {
           closeProfilePicker(),
           appState.makeProfileActive(profile),

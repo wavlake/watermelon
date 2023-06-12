@@ -163,6 +163,7 @@ class _MyHomePageState extends State<_MyHomePage> {
       backgroundColor: WavlakeColors.black,
       body: LayoutBuilder(
         builder: (context, constraints) {
+          // The stack widget lets us display the profile picker on top of the page widget
           return Stack(
             children: [
               // This is the main parent widget of each screen
@@ -204,7 +205,6 @@ class _MyHomePageState extends State<_MyHomePage> {
                   ),
                 ),
               ),
-              // The stack widget lets us display the profile picker on top of the page widget
               // if showProfilePicker is true, we spread the contents of the array below "...[]"
               if (showProfilePicker || showRelayPicker) ...[
                 // This is the dark overlay that covers the page when the profile picker is open

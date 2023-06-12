@@ -3,6 +3,7 @@ import 'package:nostr_tools/nostr_tools.dart';
 import 'package:nostr/nostr.dart' as nostr;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:watermelon/model/relay.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -35,10 +36,10 @@ class AppState with ChangeNotifier {
   // this runs when we call AppState() in main.dart in the ChangeNotifierProvider create method
   AppState() {
     GetStorage.init();
-    setInitialScreen();
+    initAppState();
   }
 
-  final unsecureStorage = GetStorage();
+  final notSecureStorage = GetStorage();
   List<UserProfile> userProfiles = [];
   Screen currentScreen = Screen.welcome;
   String loadingText = "";
@@ -46,9 +47,9 @@ class AppState with ChangeNotifier {
   TextEditingController nsecController = TextEditingController();
   TextEditingController labelController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  String relayAddress = "wss://relay.wavlake.com";
   bool showProfileSelector = false;
   UserProfile? editingProfile;
+  List<Relay> relays = [];
 
   void setEditingProfile(UserProfile profile) {
     editingProfile = profile;
@@ -84,18 +85,20 @@ class AppState with ChangeNotifier {
     return prettyprint;
   }
 
-  /// A method that sets the initial screen
-  void setInitialScreen() async {
-    // // TODO store this boolean in unsecure storage
-    // var hasSeenWelcomeScreen = true;
-    // if (!hasSeenWelcomeScreen) {
-    //   // bail and show the default welcome screen
-    //   return;
-    // }
+  /// A method that reads from local storage and initializes state
+  void initAppState() async {
+    var seenWelcomeScreen = notSecureStorage.read(hasSeenWelcomeScreen);
+    // check if the user has seen the welcome screen
+    if (seenWelcomeScreen == null || seenWelcomeScreen == "false") {
+      // show the welcome screen and set the flag to true
+      notSecureStorage.write(hasSeenWelcomeScreen, true);
+      return;
+    }
 
-    loadingText = "Checking for any stored private keys...";
+    loadingText = "Checking for any stored keys...";
     navigate(Screen.loading);
     await loadSavedProfiles();
+    await loadSavedRelays();
 
     if (activeProfile == null) {
       // we need a profile to do anything, so show the profile page
@@ -143,18 +146,62 @@ class AppState with ChangeNotifier {
       // promote the first profile to active
       userProfiles.first.setActive(true);
     }
-    // json encode for storage
-    var updatedProfiles =
-        jsonEncode(userProfiles.map((e) => e.toJson()).toList());
-
-    // update profiles in storage
-    unsecureStorage.write(publicProfileInfo, updatedProfiles);
+    await updateLocalStorageProfiles();
 
     var npubMap = await _readSecretKeyMap();
     npubMap.remove(profile.npub);
 
     // update profile secrets in storage
     await _writeSecretKey(key: secureNpubNsecMap, value: jsonEncode(npubMap));
+    notifyListeners();
+  }
+
+  Future<void> updateLocalStorageProfiles() async {
+    // json encode for storage
+    var updatedProfiles =
+        jsonEncode(userProfiles.map((e) => e.toJson()).toList());
+
+    // update profiles in storage
+    notSecureStorage.write(publicProfileInfo, updatedProfiles);
+  }
+
+  Future<void> setActiveRelay(Relay relay, bool? isActive) async {
+    relay.setActive(isActive ?? !relay.isActive);
+
+    await updateRelays();
+    notifyListeners();
+  }
+
+  Future<void> editRelay(Relay relay) async {
+    relay.setUrl("replace meeeeeeeeeeeee");
+
+    await updateRelays();
+    notifyListeners();
+  }
+
+  Future<void> updateRelays() async {
+    // json encode for storage
+    var updatedRelays = jsonEncode(relays.map((e) => e.toJson()).toList());
+
+    // update profiles in storage
+    notSecureStorage.write(publicRelayList, updatedRelays);
+  }
+
+  Future<void> deleteRelay(Relay relay) async {
+    relays.remove(relay);
+
+    await updateRelays();
+    notifyListeners();
+  }
+
+  Future<void> addRelay(String url) async {
+    var newRelay = Relay(
+      url: url,
+      isActive: true,
+    );
+    relays.add(newRelay);
+
+    await updateRelays();
     notifyListeners();
   }
 
@@ -167,6 +214,7 @@ class AppState with ChangeNotifier {
         profile.setActive(targetProfile.npub == profile.npub);
       }
 
+      await updateLocalStorageProfiles();
       notifyListeners();
     } catch (e) {
       debugPrint("Error adding new profile: $e");
@@ -174,10 +222,9 @@ class AppState with ChangeNotifier {
   }
 
   Future<void> removeAllUserData() async {
-    await _deleteSecretKey(key: storageKeyPrivateHex);
-    await _deleteSecretKey(key: storageKeyUserProfiles);
     await _deleteSecretKey(key: secureNpubNsecMap);
     userProfiles = [];
+    relays = [];
 
     notifyListeners();
   }
@@ -187,13 +234,7 @@ class AppState with ChangeNotifier {
       // update the label
       profile.setLabel(label);
 
-      // json encode for storage
-      var updatedProfiles =
-          jsonEncode(userProfiles.map((e) => e.toJson()).toList());
-
-      // update profiles in storage
-      unsecureStorage.write(publicProfileInfo, updatedProfiles);
-
+      await updateLocalStorageProfiles();
       notifyListeners();
     } catch (e) {
       debugPrint("Error adding new profile: $e");
@@ -228,11 +269,7 @@ class AppState with ChangeNotifier {
       // add the new profile to the local state list
       userProfiles.add(newUserProfile);
 
-      // json encode for storage
-      var updatedProfiles =
-          jsonEncode(userProfiles.map((e) => e.toJson()).toList());
-      // update profiles in storage
-      unsecureStorage.write(publicProfileInfo, updatedProfiles);
+      await updateLocalStorageProfiles();
       var npubMap = await _readSecretKeyMap();
       // add the new secret to the secure storage map
       npubMap.addAll({newNpub: newNsec});
@@ -340,7 +377,7 @@ class AppState with ChangeNotifier {
 
   Future<void> publishEvent(nostr.Event event) async {
     // We may want to open this socket earlier
-    WebSocket webSocket = await WebSocket.connect(relayAddress);
+    WebSocket webSocket = await WebSocket.connect(wavlakeRelay);
     webSocket.add(event.serialize());
     // and maybe keep it open longer
     await webSocket.close();
@@ -348,7 +385,7 @@ class AppState with ChangeNotifier {
 
   Future<void> loadSavedProfiles() async {
     // update profiles in storage
-    var jsonProfiles = unsecureStorage.read(publicProfileInfo);
+    var jsonProfiles = notSecureStorage.read(publicProfileInfo);
 
     try {
       List<dynamic> userProfiles = jsonDecode(jsonProfiles ?? "");
@@ -358,6 +395,23 @@ class AppState with ChangeNotifier {
       userProfiles = listOfProfiles;
     } catch (e) {
       debugPrint("Error getting all saved profiles: $e");
+    }
+  }
+
+  Future<void> loadSavedRelays() async {
+    // update profiles in storage
+    var jsonRelays = notSecureStorage.read(publicRelayList);
+
+    try {
+      relays = jsonDecode(jsonRelays ??
+              //  if no stored relays, start with the wavlake relay
+              [
+                {"url": wavlakeRelay, "isActive": true}
+              ])
+          .map((e) => Relay.fromJson(e))
+          .toList();
+    } catch (e) {
+      debugPrint("Error getting save relays: $e");
     }
   }
 
@@ -387,7 +441,6 @@ class AppState with ChangeNotifier {
       aOptions: _getAndroidOptions(),
     );
     if (value == null) {
-      print('value is null');
       return {};
     }
     Map<String, dynamic> map = jsonDecode(value);

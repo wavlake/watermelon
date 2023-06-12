@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:watermelon/model/constants.dart';
 
 import '../../model/state.dart';
+import 'relay_row.dart';
 
 class RelayPicker extends StatelessWidget {
   const RelayPicker({super.key, required this.closeRelayPicker});
@@ -23,20 +23,26 @@ class RelayPicker extends StatelessWidget {
               padding: EdgeInsets.only(bottom: 15.0, top: 15.0),
               child: Text("Relays"),
             ),
-            // ...appState.userProfiles.isEmpty
-            //     ? [const Text("Please add an account...")]
-            //     : appState.userProfiles.map((profile) {
-            //         return ProfileRow(
-            //             profile: profile,
-            //             closeProfilePicker: closeProfilePicker);
-            //       }).toList(),
+            ...appState.relays.isEmpty
+                ? [const Text("Please add a relay...")]
+                : appState.relays.map((relay) {
+                    return RelayRow(relay: relay);
+                  }).toList(),
             Padding(
               padding: const EdgeInsets.only(top: 15.0, bottom: 8.0),
-              child: ElevatedButton(
-                  onPressed: () {
-                    print("add a relay");
-                  },
-                  child: const Text("Add a relay")),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        print('add a row');
+                        ;
+                      },
+                      child: const Text("Add a relay")),
+                  ElevatedButton(
+                      onPressed: closeRelayPicker, child: const Text("Close")),
+                ],
+              ),
             ),
           ]),
     );
