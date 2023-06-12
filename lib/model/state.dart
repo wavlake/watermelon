@@ -172,7 +172,7 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> editRelay(Relay relay) async {
+  Future<void> editRelay(Relay relay, String url) async {
     relay.setUrl("replace meeeeeeeeeeeee");
 
     await updateRelays();
@@ -200,7 +200,6 @@ class AppState with ChangeNotifier {
       isActive: true,
     );
     relays.add(newRelay);
-
     await updateRelays();
     notifyListeners();
   }

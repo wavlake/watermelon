@@ -4,13 +4,22 @@ import 'package:watermelon/model/constants.dart';
 
 import '../../model/relay.dart';
 import '../../model/state.dart';
+import 'url_input.dart';
 
 class RelayRow extends StatefulWidget {
-  RelayRow({super.key, required this.relay, this.isEditing = true});
+  RelayRow(
+      {super.key,
+      required this.relay,
+      this.isEditing = false,
+      this.isNewRow = false,
+      required this.hideAddRelayRow});
 
   final Relay relay;
   final TextEditingController relayUrlController = TextEditingController();
+  final bool isNewRow;
+  final Function() hideAddRelayRow;
   bool isEditing;
+
   @override
   State<RelayRow> createState() => _RelayRowState();
 }
@@ -34,26 +43,32 @@ class _RelayRowState extends State<RelayRow> {
                 },
               ),
               widget.isEditing
-                  ? SizedBox(
-                      height: 35,
-                      width: 200,
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.all(5)),
-                        controller: widget.relayUrlController,
-                      ),
-                    )
+                  ? UrlInput(
+                      relayUrlController: widget.relayUrlController,
+                      url: widget.relay.url)
                   : Text(widget.relay.url),
             ],
           ),
           Row(
             children: [
               TextButton(
-                  onPressed: () => {
-                        setState(() {
-                          widget.isEditing = !widget.isEditing;
-                        })
-                      },
+                  onPressed: () {
+                    if (widget.isEditing) {
+                      if (widget.isNewRow) {
+                        // adding a new relay
+                        appState.addRelay(widget.relayUrlController.text);
+                      } else {
+                        // editing an existing relay
+                        appState.editRelay(
+                            widget.relay, widget.relayUrlController.text);
+                      }
+                      widget.hideAddRelayRow();
+                    } else {
+                      setState(() {
+                        widget.isEditing = !widget.isEditing;
+                      });
+                    }
+                  },
                   child: Icon(
                     widget.isEditing ? Icons.save : Icons.edit,
                     color: WavlakeColors.mint,
@@ -61,12 +76,11 @@ class _RelayRowState extends State<RelayRow> {
                   )),
               TextButton(
                   onPressed: () async {
-                    print("delete relay");
                     await appState.deleteRelay(widget.relay);
                   },
                   child: const Icon(
                     Icons.delete,
-                    color: WavlakeColors.orange,
+                    color: WavlakeColors.red,
                     size: 20.0,
                   )),
             ],

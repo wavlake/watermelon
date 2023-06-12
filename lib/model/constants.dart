@@ -40,6 +40,7 @@ abstract class WavlakeColors {
   static const Color orange = Color(0xFFffb848);
   static const Color mint = Color(0xFF5bdeb1);
   static const Color black = Color(0xFF171817);
+  static const Color red = Color(0xFFff4949);
   // new color that isnt used in other apps
   static const Color lightBlack = Color(0xFF303230);
 }

@@ -17,9 +17,17 @@ class RelayPicker extends StatefulWidget {
 }
 
 class _RelayPickerState extends State<RelayPicker> {
-  void addRelayRow() {
+  bool showAddRow = false;
+
+  void showAddRelayRow() {
     setState(() {
-      widget.uiRelays.add(Relay(url: ""));
+      showAddRow = true;
+    });
+  }
+
+  void hideAddRelayRow() {
+    setState(() {
+      showAddRow = false;
     });
   }
 
@@ -38,11 +46,21 @@ class _RelayPickerState extends State<RelayPicker> {
               padding: EdgeInsets.only(bottom: 15.0, top: 15.0),
               child: Text("Relays"),
             ),
-            ...appState.relays.isEmpty
+            ...appState.relays.isEmpty && !showAddRow
                 ? [const Text("Please add a relay...")]
                 : appState.relays.map((relay) {
-                    return RelayRow(relay: relay);
+                    return RelayRow(
+                      relay: relay,
+                      hideAddRelayRow: hideAddRelayRow,
+                    );
                   }).toList(),
+            if (showAddRow)
+              RelayRow(
+                relay: Relay(url: ""),
+                isEditing: true,
+                hideAddRelayRow: hideAddRelayRow,
+                isNewRow: true,
+              ),
             Padding(
               padding: const EdgeInsets.only(top: 15.0, bottom: 8.0),
               child: Row(
@@ -50,7 +68,7 @@ class _RelayPickerState extends State<RelayPicker> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        addRelayRow();
+                        showAddRelayRow();
                       },
                       child: const Text("Add a relay")),
                   ElevatedButton(
@@ -61,6 +79,5 @@ class _RelayPickerState extends State<RelayPicker> {
             ),
           ]),
     );
-    ;
   }
 }
