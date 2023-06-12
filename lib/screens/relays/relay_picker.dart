@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../model/relay.dart';
 import '../../model/state.dart';
 import 'relay_row.dart';
 
-class RelayPicker extends StatelessWidget {
-  const RelayPicker({super.key, required this.closeRelayPicker});
+class RelayPicker extends StatefulWidget {
+  const RelayPicker(
+      {super.key, required this.closeRelayPicker, required this.uiRelays});
 
   final void Function() closeRelayPicker;
+  final List<Relay> uiRelays;
+
+  @override
+  State<RelayPicker> createState() => _RelayPickerState();
+}
+
+class _RelayPickerState extends State<RelayPicker> {
+  void addRelayRow() {
+    setState(() {
+      widget.uiRelays.add(Relay(url: ""));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -35,12 +50,12 @@ class RelayPicker extends StatelessWidget {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        print('add a row');
-                        ;
+                        addRelayRow();
                       },
                       child: const Text("Add a relay")),
                   ElevatedButton(
-                      onPressed: closeRelayPicker, child: const Text("Close")),
+                      onPressed: widget.closeRelayPicker,
+                      child: const Text("Close")),
                 ],
               ),
             ),

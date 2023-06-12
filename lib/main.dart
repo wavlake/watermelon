@@ -265,6 +265,7 @@ class _MyHomePageState extends State<_MyHomePage> {
                             width: MediaQuery.of(context).size.width,
                             child: RelayPicker(
                               closeRelayPicker: closeBothPickers,
+                              uiRelays: appState.relays,
                             ),
                           ),
                         )

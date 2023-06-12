@@ -35,9 +35,11 @@ class _RelayRowState extends State<RelayRow> {
               ),
               widget.isEditing
                   ? SizedBox(
-                      height: 40,
+                      height: 35,
                       width: 200,
                       child: TextFormField(
+                        decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.all(5)),
                         controller: widget.relayUrlController,
                       ),
                     )
