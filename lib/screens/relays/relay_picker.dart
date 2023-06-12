@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watermelon/model/constants.dart';
 
-import 'profile_row.dart';
 import '../../model/state.dart';
 
-class ProfilePicker extends StatelessWidget {
-  const ProfilePicker({super.key, required this.closeProfilePicker});
+class RelayPicker extends StatelessWidget {
+  const RelayPicker({super.key, required this.closeRelayPicker});
 
-  final void Function() closeProfilePicker;
+  final void Function() closeRelayPicker;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -22,26 +21,25 @@ class ProfilePicker extends StatelessWidget {
           children: [
             const Padding(
               padding: EdgeInsets.only(bottom: 15.0, top: 15.0),
-              child: Text("Switch profile"),
+              child: Text("Relays"),
             ),
-            ...appState.userProfiles.isEmpty
-                ? [const Text("Please add an account...")]
-                : appState.userProfiles.map((profile) {
-                    return ProfileRow(
-                        profile: profile,
-                        closeProfilePicker: closeProfilePicker);
-                  }).toList(),
+            // ...appState.userProfiles.isEmpty
+            //     ? [const Text("Please add an account...")]
+            //     : appState.userProfiles.map((profile) {
+            //         return ProfileRow(
+            //             profile: profile,
+            //             closeProfilePicker: closeProfilePicker);
+            //       }).toList(),
             Padding(
               padding: const EdgeInsets.only(top: 15.0, bottom: 8.0),
               child: ElevatedButton(
                   onPressed: () {
-                    appState.labelController.clear();
-                    appState.nsecController.clear();
-                    appState.navigate(Screen.addUserProfile);
+                    print("add a relay");
                   },
-                  child: const Text("Add New Account")),
+                  child: const Text("Add a relay")),
             ),
           ]),
     );
+    ;
   }
 }

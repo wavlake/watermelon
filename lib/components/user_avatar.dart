@@ -24,7 +24,10 @@ class UserAvatar extends StatelessWidget {
             child: SizedBox(
                 width: size,
                 height: size,
-                child: Image.network(profile.profileUrl))),
+                // child: Image.network(profile.profileUrl))),
+                child: profile.profileUrl == null
+                    ? Image(image: AssetImage(profile.defaultProfileUrl))
+                    : Image.network(profile.profileUrl!))),
       ],
     );
   }
