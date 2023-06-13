@@ -1,35 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:watermelon/model/constants.dart';
 
 import '../../model/relay.dart';
 import '../../model/state.dart';
 import 'relay_row.dart';
 
-class RelayPicker extends StatefulWidget {
+class RelayPicker extends StatelessWidget {
   const RelayPicker(
       {super.key, required this.closeRelayPicker, required this.uiRelays});
 
   final void Function() closeRelayPicker;
   final List<Relay> uiRelays;
-
-  @override
-  State<RelayPicker> createState() => _RelayPickerState();
-}
-
-class _RelayPickerState extends State<RelayPicker> {
-  bool showAddRow = false;
-
-  void showAddRelayRow() {
-    setState(() {
-      showAddRow = true;
-    });
-  }
-
-  void hideAddRelayRow() {
-    setState(() {
-      showAddRow = false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +28,12 @@ class _RelayPickerState extends State<RelayPicker> {
               padding: EdgeInsets.only(bottom: 15.0, top: 15.0),
               child: Text("Relays"),
             ),
-            ...appState.relays.isEmpty && !showAddRow
+            ...appState.relays.isEmpty
                 ? [const Text("Please add a relay...")]
                 : appState.relays.map((relay) {
                     return RelayRow(
                       relay: relay,
-                      closeRelayPicker: widget.closeRelayPicker,
+                      closeRelayPicker: closeRelayPicker,
                     );
                   }).toList(),
             Padding(
@@ -61,12 +43,12 @@ class _RelayPickerState extends State<RelayPicker> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        showAddRelayRow();
+                        closeRelayPicker();
+                        appState.navigate(Screen.addRelay);
                       },
                       child: const Text("Add a relay")),
                   ElevatedButton(
-                      onPressed: widget.closeRelayPicker,
-                      child: const Text("Close")),
+                      onPressed: closeRelayPicker, child: const Text("Close")),
                 ],
               ),
             ),

@@ -57,6 +57,7 @@ class ProfileRow extends StatelessWidget {
               children: [
                 TextButton(
                     onPressed: () {
+                      closeProfilePicker();
                       appState.setEditingProfile(profile);
                       appState.navigate(Screen.editUserProfile);
                     },

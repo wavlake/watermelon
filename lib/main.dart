@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:watermelon/screens/relays/relay_picker.dart';
-import '/screens/userProfile/add_user_profile_screen.dart';
+
+import 'screens/relays/add_relay_screen.dart';
 import 'screens/userProfile/edit_profile_screen.dart';
 import 'screens/userProfile/profile_picker.dart';
-import 'model/constants.dart';
+import 'screens/userProfile/add_user_profile_screen.dart';
+import 'screens/relays/edit_relay_screen.dart';
+import 'screens/relays/relay_picker.dart';
 import 'screens/signing_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'screens/loading_screen.dart';
+import 'model/constants.dart';
 import 'model/state.dart';
-import 'package:flutter/services.dart'; // For `SystemChrome`
 
 // https://dartling.dev/toggle-full-screen-mode-in-flutter#heading-types-of-full-screen-modes
 void enterFullScreen() {
@@ -154,6 +157,14 @@ class _MyHomePageState extends State<_MyHomePage> {
         break;
       case Screen.editUserProfile:
         page = const EditProfileScreen();
+        break;
+      case Screen.addRelay:
+        page = AddRelayScreen(
+          closeRelayPicker: closeBothPickers,
+        );
+        break;
+      case Screen.editRelay:
+        page = const EditRelayScreen();
         break;
       default:
         throw UnimplementedError('no widget for ${appState.currentScreen}');

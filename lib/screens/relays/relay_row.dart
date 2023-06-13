@@ -23,6 +23,7 @@ class RelayRow extends StatelessWidget {
         children: [
           Row(
             children: [
+              // TODO - add checkbox to make active/inactive
               // Checkbox(
               //   value: widget.relay.isActive,
               //   onChanged: (value) {
@@ -37,6 +38,7 @@ class RelayRow extends StatelessWidget {
             children: [
               TextButton(
                   onPressed: () {
+                    closeRelayPicker();
                     appState.setEditingRelay(relay);
                     appState.navigate(Screen.editRelay);
                   },

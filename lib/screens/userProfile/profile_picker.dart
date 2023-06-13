@@ -37,6 +37,7 @@ class ProfilePicker extends StatelessWidget {
                   onPressed: () {
                     appState.labelController.clear();
                     appState.nsecController.clear();
+                    closeProfilePicker();
                     appState.navigate(Screen.addUserProfile);
                   },
                   child: const Text("Add New Account")),

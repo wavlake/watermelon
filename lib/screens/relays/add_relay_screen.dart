@@ -5,8 +5,8 @@ import 'package:watermelon/screens/relays/url_input.dart';
 import '../../components/top_back_button.dart';
 import '../../model/state.dart';
 
-class AddUserProfileScreen extends StatelessWidget {
-  const AddUserProfileScreen({
+class AddRelayScreen extends StatelessWidget {
+  const AddRelayScreen({
     super.key,
     required this.closeRelayPicker,
   });
@@ -34,33 +34,18 @@ class AddUserProfileScreen extends StatelessWidget {
                   UrlInput(appState: appState),
                   ElevatedButton(
                     onPressed: () {
-                      if (appState.formKey.currentState!.validate()) {
-                        appState.addRelay();
-                        closeRelayPicker();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Invalid Key')),
-                        );
-                      }
+                      closeRelayPicker();
+                      appState.addRelay();
                     },
-                    child: const Text('Login'),
+                    child: const Text('Add'),
                   ),
                 ],
               ),
             ),
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: TextButton(
-                      onPressed: () {
-                        closeRelayPicker();
-                        appState.generateNewNsec();
-                      },
-                      child: const Text("Generate a new key")),
-                ),
-              ],
-            ),
+            // this is to force the widget above to be centered
+            const SizedBox(
+              height: 50,
+            )
           ],
         ));
   }

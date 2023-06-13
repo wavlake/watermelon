@@ -10,6 +10,7 @@ enum Screen {
   loading,
   editUserProfile,
   editRelay,
+  addRelay,
 }
 
 /// deprecated keys
@@ -30,6 +31,8 @@ const Map<Screen, bool> shouldShowProfileSwitchButton = {
   Screen.scanner: true,
   Screen.loading: false,
   Screen.editUserProfile: false,
+  Screen.addRelay: true,
+  Screen.editRelay: true,
 };
 
 // https://stackoverflow.com/questions/50081213/how-do-i-use-hexadecimal-color-strings-in-flutter

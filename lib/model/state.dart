@@ -68,11 +68,6 @@ class AppState with ChangeNotifier {
     navigate(Screen.signing);
   }
 
-  void saveRelayUrl() {
-    editRelay(editingRelay!, relayUrlController.text);
-    navigate(Screen.signing);
-  }
-
   /// The user profile that is currently active, can be null
   UserProfile? get activeProfile {
     try {
@@ -184,11 +179,17 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> editRelay(Relay relay, String url) async {
-    relay.setUrl("replace meeeeeeeeeeeee");
+  Future<void> editRelay() async {
+    try {
+      editingRelay!.setUrl(relayUrlController.text);
 
-    await updateRelays();
-    notifyListeners();
+      await updateRelays();
+      navigate(Screen.signing);
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error editing relay: $e");
+    }
   }
 
   Future<void> updateRelays() async {
@@ -214,6 +215,8 @@ class AppState with ChangeNotifier {
     );
     relays.add(newRelay);
     await updateRelays();
+    navigate(Screen.signing);
+
     notifyListeners();
   }
 

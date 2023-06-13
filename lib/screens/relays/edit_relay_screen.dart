@@ -5,8 +5,8 @@ import 'package:watermelon/screens/relays/url_input.dart';
 
 import '../../model/state.dart';
 
-class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+class EditRelayScreen extends StatelessWidget {
+  const EditRelayScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class EditProfileScreen extends StatelessWidget {
         ),
         UrlInput(appState: appState),
         ElevatedButton(
-            onPressed: appState.saveRelayUrl, child: const Text("Save")),
+            onPressed: appState.editRelay, child: const Text("Save")),
       ],
     );
   }

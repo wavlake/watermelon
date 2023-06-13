@@ -10,6 +10,8 @@ Map<Screen, Screen> backButtonMap = {
   Screen.signing: Screen.addUserProfile,
   Screen.scanner: Screen.signing,
   Screen.editUserProfile: Screen.signing,
+  Screen.addRelay: Screen.signing,
+  Screen.editRelay: Screen.signing,
 };
 
 class TopBackButton extends StatelessWidget {
