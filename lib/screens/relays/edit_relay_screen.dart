@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watermelon/components/top_back_button.dart';
+import 'package:watermelon/screens/relays/url_input.dart';
 
 import '../../model/state.dart';
-import 'label_input.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
@@ -18,9 +18,9 @@ class EditProfileScreen extends StatelessWidget {
         const TopBackButton(
           title: "Edit Account",
         ),
-        LabelInput(appState: appState),
+        UrlInput(appState: appState),
         ElevatedButton(
-            onPressed: appState.saveLabel, child: const Text("Save")),
+            onPressed: appState.saveRelayUrl, child: const Text("Save")),
       ],
     );
   }

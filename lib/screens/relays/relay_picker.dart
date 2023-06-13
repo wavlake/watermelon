@@ -51,16 +51,9 @@ class _RelayPickerState extends State<RelayPicker> {
                 : appState.relays.map((relay) {
                     return RelayRow(
                       relay: relay,
-                      hideAddRelayRow: hideAddRelayRow,
+                      closeRelayPicker: widget.closeRelayPicker,
                     );
                   }).toList(),
-            if (showAddRow)
-              RelayRow(
-                relay: Relay(url: ""),
-                isEditing: true,
-                hideAddRelayRow: hideAddRelayRow,
-                isNewRow: true,
-              ),
             Padding(
               padding: const EdgeInsets.only(top: 15.0, bottom: 8.0),
               child: Row(

@@ -25,3 +25,12 @@ cd ios
 rm -rf Pods/
 pod install
 ```
+
+## iOS deploy
+https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases
+
+1. Open Xcode and select the project
+1. Create an archive (Product > Archive)
+1. Select the archive within the archive organizer (Window > Organizer)
+1. Select "Distribute App"
+

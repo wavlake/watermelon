@@ -8,7 +8,8 @@ enum Screen {
   signing,
   scanner,
   loading,
-  editUserProfile
+  editUserProfile,
+  editRelay,
 }
 
 /// deprecated keys

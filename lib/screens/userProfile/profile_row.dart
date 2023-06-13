@@ -56,18 +56,19 @@ class ProfileRow extends StatelessWidget {
             Row(
               children: [
                 TextButton(
-                    onPressed: () => {
-                          appState.setEditingProfile(profile),
-                          appState.navigate(Screen.editUserProfile),
-                        },
+                    onPressed: () {
+                      appState.setEditingProfile(profile);
+                      appState.navigate(Screen.editUserProfile);
+                    },
                     child: const Icon(
                       Icons.edit,
                       color: WavlakeColors.mint,
                       size: 20.0,
                     )),
                 TextButton(
-                    onPressed: () => deleteProfileDialog(
-                        context, profile, closeProfilePicker),
+                    onPressed: () {
+                      deleteProfileDialog(context, profile, closeProfilePicker);
+                    },
                     child: const Icon(
                       Icons.delete,
                       color: WavlakeColors.orange,

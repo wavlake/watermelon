@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../model/state.dart';
+
 class UrlInput extends StatefulWidget {
-  UrlInput({
+  const UrlInput({
     super.key,
-    required this.relayUrlController,
-    required this.url,
+    required this.appState,
   });
 
-  TextEditingController relayUrlController;
-  String url;
+  final AppState appState;
 
   @override
   State<UrlInput> createState() => _UrlInputState();
@@ -17,13 +17,11 @@ class UrlInput extends StatefulWidget {
 class _UrlInputState extends State<UrlInput> {
   @override
   Widget build(BuildContext context) {
-    widget.relayUrlController.text = widget.url;
-
     return SizedBox(
         height: 35,
         width: 200,
         child: TextFormField(
-            controller: widget.relayUrlController,
+            controller: widget.appState.relayUrlController,
             decoration:
                 const InputDecoration(contentPadding: EdgeInsets.all(5))));
   }

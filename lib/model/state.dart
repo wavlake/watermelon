@@ -46,9 +46,11 @@ class AppState with ChangeNotifier {
   String unsecurePrivateHexKey = "";
   TextEditingController nsecController = TextEditingController();
   TextEditingController labelController = TextEditingController();
+  TextEditingController relayUrlController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool showProfileSelector = false;
   UserProfile? editingProfile;
+  Relay? editingRelay;
   List<Relay> relays = [];
 
   void setEditingProfile(UserProfile profile) {
@@ -56,8 +58,18 @@ class AppState with ChangeNotifier {
     labelController.text = profile.label;
   }
 
+  void setEditingRelay(Relay relay) {
+    editingRelay = relay;
+    relayUrlController.text = relay.url;
+  }
+
   void saveLabel() {
     editProfile(editingProfile!, labelController.text);
+    navigate(Screen.signing);
+  }
+
+  void saveRelayUrl() {
+    editRelay(editingRelay!, relayUrlController.text);
     navigate(Screen.signing);
   }
 
@@ -165,8 +177,8 @@ class AppState with ChangeNotifier {
     notSecureStorage.write(publicProfileInfo, updatedProfiles);
   }
 
-  Future<void> setActiveRelay(Relay relay, bool? isActive) async {
-    relay.setActive(isActive ?? !relay.isActive);
+  Future<void> setActiveRelay(Relay relay, bool isActive) async {
+    relay.setActive(isActive);
 
     await updateRelays();
     notifyListeners();
@@ -194,7 +206,8 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addRelay(String url) async {
+  Future<void> addRelay() async {
+    String url = relayUrlController.text;
     var newRelay = Relay(
       url: url,
       isActive: true,
