@@ -18,6 +18,19 @@ class SigningScreen extends StatelessWidget {
         );
         return;
       }
+      if (appState.activeProfile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a profile to sign with')),
+        );
+        return;
+      }
+
+      if (appState.relays.where((element) => element.isActive).isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No active relays to publish to')),
+        );
+        return;
+      }
       bool isSuccess = await appState.signEvent();
 
       // need to check if context.mounted is true before passing context
