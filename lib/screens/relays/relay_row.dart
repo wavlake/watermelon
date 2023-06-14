@@ -23,14 +23,13 @@ class RelayRow extends StatelessWidget {
         children: [
           Row(
             children: [
-              // TODO - add checkbox to make active/inactive
-              // Checkbox(
-              //   value: widget.relay.isActive,
-              //   onChanged: (value) {
-              //     if (value != null) return;
-              //     appState.setActiveRelay(widget.relay, value!);
-              //   },
-              // ),
+              Checkbox(
+                value: relay.isActive,
+                onChanged: (value) {
+                  if (value == null) return;
+                  appState.setActiveRelay(relay, value);
+                },
+              ),
               Text(relay.url),
             ],
           ),

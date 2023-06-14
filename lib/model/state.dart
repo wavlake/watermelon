@@ -47,7 +47,10 @@ class AppState with ChangeNotifier {
   TextEditingController nsecController = TextEditingController();
   TextEditingController labelController = TextEditingController();
   TextEditingController relayUrlController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+  final addProfileForm = GlobalKey<FormState>();
+  final editProfileForm = GlobalKey<FormState>();
+  final addRelayForm = GlobalKey<FormState>();
+  final editRelayForm = GlobalKey<FormState>();
   bool showProfileSelector = false;
   UserProfile? editingProfile;
   Relay? editingRelay;
@@ -215,6 +218,7 @@ class AppState with ChangeNotifier {
     );
     relays.add(newRelay);
     await updateRelays();
+    relayUrlController.text = "";
     navigate(Screen.signing);
 
     notifyListeners();

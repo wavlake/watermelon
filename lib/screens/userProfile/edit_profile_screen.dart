@@ -13,19 +13,30 @@ class EditProfileScreen extends StatelessWidget {
     var appState = context.watch<AppState>();
 
     // profile list view
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const TopBackButton(
-          title: "Edit Profile",
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: LabelInput(appState: appState),
-        ),
-        ElevatedButton(
-            onPressed: appState.saveLabel, child: const Text("Save")),
-      ],
+    return Form(
+      key: appState.editProfileForm,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const TopBackButton(
+            title: "Edit Profile",
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: LabelInput(appState: appState),
+              ),
+              ElevatedButton(
+                  onPressed: appState.saveLabel, child: const Text("Save")),
+            ],
+          ),
+          // this is to force the widget above to be centered
+          const SizedBox(
+            height: 50,
+          )
+        ],
+      ),
     );
   }
 }

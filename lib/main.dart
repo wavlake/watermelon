@@ -171,6 +171,8 @@ class _MyHomePageState extends State<_MyHomePage> {
     }
 
     return Scaffold(
+      // https://stackoverflow.com/questions/46551268/when-the-keyboard-appears-the-flutter-widgets-resize-how-to-prevent-this
+      resizeToAvoidBottomInset: false,
       backgroundColor: WavlakeColors.black,
       body: LayoutBuilder(
         builder: (context, constraints) {

@@ -44,6 +44,7 @@ class RelayPicker extends StatelessWidget {
                   ElevatedButton(
                       onPressed: () {
                         closeRelayPicker();
+                        appState.relayUrlController.text = "wss://";
                         appState.navigate(Screen.addRelay);
                       },
                       child: const Text("Add a relay")),

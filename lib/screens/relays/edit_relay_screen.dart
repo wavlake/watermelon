@@ -13,19 +13,39 @@ class EditRelayScreen extends StatelessWidget {
     var appState = context.watch<AppState>();
 
     // profile list view
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const TopBackButton(
-          title: "Edit Relay",
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: UrlInput(appState: appState),
-        ),
-        ElevatedButton(
-            onPressed: appState.editRelay, child: const Text("Save")),
-      ],
+    return Form(
+      key: appState.editRelayForm,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const TopBackButton(
+            title: "Edit Relay",
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: UrlInput(appState: appState),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    if (appState.editRelayForm.currentState!.validate()) {
+                      appState.editRelay();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Invalid url')),
+                      );
+                    }
+                  },
+                  child: const Text("Save")),
+            ],
+          ),
+          // this is to force the widget above to be centered
+          const SizedBox(
+            height: 50,
+          )
+        ],
+      ),
     );
   }
 }

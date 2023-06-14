@@ -18,35 +18,42 @@ class AddRelayScreen extends StatelessWidget {
     var appState = context.watch<AppState>();
 
     return Form(
-        key: appState.formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const TopBackButton(
-              title: "Add an Account",
-            ),
-            Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  UrlInput(appState: appState),
-                  ElevatedButton(
-                    onPressed: () {
+      key: appState.addRelayForm,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const TopBackButton(
+            title: "Add an Account",
+          ),
+          Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                UrlInput(appState: appState),
+                ElevatedButton(
+                  onPressed: () {
+                    if (appState.addRelayForm.currentState!.validate()) {
                       closeRelayPicker();
                       appState.addRelay();
-                    },
-                    child: const Text('Add'),
-                  ),
-                ],
-              ),
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Invalid url')),
+                      );
+                    }
+                  },
+                  child: const Text('Add'),
+                ),
+              ],
             ),
-            // this is to force the widget above to be centered
-            const SizedBox(
-              height: 50,
-            )
-          ],
-        ));
+          ),
+          // this is to force the widget above to be centered
+          const SizedBox(
+            height: 50,
+          )
+        ],
+      ),
+    );
   }
 }
