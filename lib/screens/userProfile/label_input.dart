@@ -23,7 +23,7 @@ class _LabelInputState extends State<LabelInput> {
         controller: widget.appState.labelController,
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
-          labelText: "label",
+          labelText: "profile label",
         ),
       ),
     );

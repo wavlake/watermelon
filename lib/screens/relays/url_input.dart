@@ -18,11 +18,14 @@ class _UrlInputState extends State<UrlInput> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 35,
-        width: 200,
-        child: TextFormField(
-            controller: widget.appState.relayUrlController,
-            decoration:
-                const InputDecoration(contentPadding: EdgeInsets.all(5))));
+      height: 100,
+      child: TextFormField(
+        controller: widget.appState.relayUrlController,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: "relay url",
+        ),
+      ),
+    );
   }
 }

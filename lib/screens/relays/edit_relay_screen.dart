@@ -14,11 +14,15 @@ class EditRelayScreen extends StatelessWidget {
 
     // profile list view
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const TopBackButton(
-          title: "Edit Account",
+          title: "Edit Relay",
         ),
-        UrlInput(appState: appState),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: UrlInput(appState: appState),
+        ),
         ElevatedButton(
             onPressed: appState.editRelay, child: const Text("Save")),
       ],

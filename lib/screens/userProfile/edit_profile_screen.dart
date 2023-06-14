@@ -14,11 +14,15 @@ class EditProfileScreen extends StatelessWidget {
 
     // profile list view
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const TopBackButton(
-          title: "Edit Account",
+          title: "Edit Profile",
         ),
-        LabelInput(appState: appState),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: LabelInput(appState: appState),
+        ),
         ElevatedButton(
             onPressed: appState.saveLabel, child: const Text("Save")),
       ],
