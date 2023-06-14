@@ -31,10 +31,6 @@ class EditRelayScreen extends StatelessWidget {
                   onPressed: () {
                     if (appState.editRelayForm.currentState!.validate()) {
                       appState.editRelay();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Invalid url')),
-                      );
                     }
                   },
                   child: const Text("Save")),

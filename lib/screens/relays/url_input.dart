@@ -37,6 +37,21 @@ class _UrlInputState extends State<UrlInput> {
             return 'Please enter a valid url';
           }
 
+          // get a list of existing relays, excluding the one being edited
+          var otherRelays = [
+            ...widget.appState.relays.where((element) {
+              return element != widget.appState.editingRelay;
+            })
+          ];
+          // check if any other relay has the same url
+          var duplicateUrl = otherRelays.any((element) {
+            return element.url == value;
+          });
+
+          if (duplicateUrl) {
+            return 'This url is already in use';
+          }
+
           return null;
         },
       ),

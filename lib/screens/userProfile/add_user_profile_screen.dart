@@ -39,10 +39,6 @@ class AddUserProfileScreen extends StatelessWidget {
                       if (appState.addProfileForm.currentState!.validate()) {
                         closeProfilePicker();
                         appState.addNewProfile();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Invalid Key')),
-                        );
                       }
                     },
                     child: const Text('Login'),
