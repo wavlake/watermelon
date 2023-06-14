@@ -414,7 +414,6 @@ class AppState with ChangeNotifier {
         relays.where((element) => element.isActive).toList();
 
     for (Relay relay in activeRelays) {
-      print(relay.url);
       try {
         // We may want to open this socket earlier
         WebSocket webSocket = await WebSocket.connect(relay.url);
@@ -427,19 +426,16 @@ class AppState with ChangeNotifier {
         debugPrint(relay.url);
       }
     }
-    print(successRelays);
   }
 
   Future<void> loadSavedProfiles() async {
     // update profiles in storage
     var jsonProfiles = notSecureStorage.read(publicProfileInfo);
-
+    print(jsonProfiles);
     try {
-      List<dynamic> userProfiles = jsonDecode(jsonProfiles ?? "");
-      List<UserProfile> listOfProfiles =
-          userProfiles.map((e) => UserProfile.fromJson(e)).toList();
-
-      userProfiles = listOfProfiles;
+      List<dynamic> tempList = jsonDecode(jsonProfiles ?? []);
+      print(tempList);
+      userProfiles = tempList.map((e) => UserProfile.fromJson(e)).toList();
     } catch (e) {
       debugPrint("Error getting all saved profiles: $e");
     }
@@ -450,15 +446,14 @@ class AppState with ChangeNotifier {
     var jsonRelays = notSecureStorage.read(publicRelayList);
 
     try {
-      relays = jsonDecode(jsonRelays ??
-              //  if no stored relays, start with the wavlake relay
-              [
-                {"url": wavlakeRelay, "isActive": true}
-              ])
-          .map((e) => Relay.fromJson(e))
-          .toList();
+      List<dynamic> tempList = jsonDecode(jsonRelays ?? []);
+      relays = tempList.map((e) => Relay.fromJson(e)).toList();
+      if (relays.isEmpty) {
+        //  if no stored relays, start with the wavlake relay
+        relays.add(Relay(url: wavlakeRelay, isActive: true));
+      }
     } catch (e) {
-      debugPrint("Error getting save relays: $e");
+      debugPrint("Error getting saved relays: $e");
     }
   }
 
