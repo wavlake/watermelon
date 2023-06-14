@@ -22,6 +22,9 @@ class _NsecInputState extends State<NsecInput> {
     return SizedBox(
       height: 100,
       child: TextFormField(
+        autocorrect: false,
+        keyboardType: TextInputType.visiblePassword,
+        autofocus: true,
         controller: widget.appState.nsecController,
         obscureText: isObscured,
         decoration: InputDecoration(

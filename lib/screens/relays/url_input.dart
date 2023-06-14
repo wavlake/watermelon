@@ -20,6 +20,9 @@ class _UrlInputState extends State<UrlInput> {
     return SizedBox(
       height: 100,
       child: TextFormField(
+        autocorrect: false,
+        keyboardType: TextInputType.url,
+        autofocus: true,
         controller: widget.appState.relayUrlController,
         decoration: const InputDecoration(
           border: OutlineInputBorder(),

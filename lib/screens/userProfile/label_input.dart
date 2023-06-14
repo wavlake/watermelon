@@ -20,6 +20,9 @@ class _LabelInputState extends State<LabelInput> {
     return SizedBox(
       height: 100,
       child: TextFormField(
+        autocorrect: true,
+        keyboardType: TextInputType.name,
+        autofocus: true,
         controller: widget.appState.labelController,
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
