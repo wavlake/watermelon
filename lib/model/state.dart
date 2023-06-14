@@ -224,6 +224,17 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> testRelayConnection(String url) async {
+    try {
+      WebSocket webSocket = await WebSocket.connect(url);
+      await webSocket.close();
+      return true;
+    } catch (e) {
+      debugPrint("Error testing relay connection: $e");
+      return false;
+    }
+  }
+
   Future<void> makeProfileActive(UserProfile targetProfile) async {
     try {
       // set all profiles to inactive
@@ -394,12 +405,29 @@ class AppState with ChangeNotifier {
     }
   }
 
+  List<Relay> successRelays = [];
+
   Future<void> publishEvent(nostr.Event event) async {
-    // We may want to open this socket earlier
-    WebSocket webSocket = await WebSocket.connect(wavlakeRelay);
-    webSocket.add(event.serialize());
-    // and maybe keep it open longer
-    await webSocket.close();
+    successRelays = [];
+
+    List<Relay> activeRelays =
+        relays.where((element) => element.isActive).toList();
+
+    for (Relay relay in activeRelays) {
+      print(relay.url);
+      try {
+        // We may want to open this socket earlier
+        WebSocket webSocket = await WebSocket.connect(relay.url);
+        webSocket.add(event.serialize());
+        // and maybe keep it open longer
+        await webSocket.close();
+        successRelays.add(relay);
+      } catch (e) {
+        debugPrint("Error publishing event: $e");
+        debugPrint(relay.url);
+      }
+    }
+    print(successRelays);
   }
 
   Future<void> loadSavedProfiles() async {
