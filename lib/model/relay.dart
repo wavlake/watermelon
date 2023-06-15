@@ -1,7 +1,7 @@
 class Relay {
   Relay({
     required this.url,
-    bool? isActive = true,
+    this.isActive = true,
   }) {
     url = url;
     isActive = isActive;
@@ -16,7 +16,7 @@ class Relay {
   }
 
   String url;
-  bool isActive = false;
+  bool isActive;
 
   Map<String, dynamic> toJson() {
     return {

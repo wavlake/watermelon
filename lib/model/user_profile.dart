@@ -3,7 +3,7 @@ class UserProfile {
   UserProfile(
       {required this.npub,
       required this.label,
-      bool? isActive = false,
+      this.isActive = false,
       String? profileUrl}) {
     npub = npub;
     isActive = isActive;
@@ -27,7 +27,7 @@ class UserProfile {
   String label;
   String? profileUrl;
   String defaultProfileUrl = "assets/wavlake.png";
-  bool isActive = false;
+  bool isActive;
 
   Map<String, dynamic> toJson() {
     return {

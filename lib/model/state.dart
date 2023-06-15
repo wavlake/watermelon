@@ -110,20 +110,19 @@ class AppState with ChangeNotifier {
     await loadSavedProfiles();
     await loadSavedRelays();
 
-    if (activeProfile == null) {
-      // we need a profile to do anything, so show the profile page
-      navigate(Screen.addUserProfile);
-    } else {
-      // if there is a saved private key, navigate to the signing screen
-      navigate(Screen.signing);
-    }
+    navigate(Screen.signing);
   }
 
   /// A method to navigate to a new screen
   void navigate(Screen newScreen) {
     if (newScreen == Screen.editUserProfile && editingProfile == null) {
       debugPrint(
-          "Error: no profile to edit, did you forget to call setEditingProfile");
+          "Error: no profile to edit, did you forget to call setEditingProfile?");
+      return;
+    }
+    if (newScreen == Screen.editRelay && editingRelay == null) {
+      debugPrint(
+          "Error: no relay to edit, did you forget to call setEditingRelay?");
       return;
     }
     // update the state
@@ -431,10 +430,8 @@ class AppState with ChangeNotifier {
   Future<void> loadSavedProfiles() async {
     // update profiles in storage
     var jsonProfiles = notSecureStorage.read(publicProfileInfo);
-    print(jsonProfiles);
     try {
       List<dynamic> tempList = jsonDecode(jsonProfiles ?? []);
-      print(tempList);
       userProfiles = tempList.map((e) => UserProfile.fromJson(e)).toList();
     } catch (e) {
       debugPrint("Error getting all saved profiles: $e");
