@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:nostr_tools/nostr_tools.dart';
 import 'package:nostr/nostr.dart' as nostr;
@@ -115,12 +113,16 @@ class AppState with ChangeNotifier {
       return;
     }
 
-    loadingText = "Checking for any stored keys...";
-    // navigate(Screen.loading);
-    await loadSavedProfiles();
+    loadingText = "Loading saved relays...";
+    navigate(Screen.loading);
     await loadSavedRelays();
+    loadingText = "Loading saved profiles...";
+    await loadSavedProfiles();
+    navigate(Screen.signing);
 
-    // navigate(Screen.signing);
+    // this step takes a few seconds, depends on how many relays a user has added
+    loadingText = "Updating profile metadata...";
+    await updateMetadata();
   }
 
   /// A method to navigate to a new screen
@@ -433,6 +435,50 @@ class AppState with ChangeNotifier {
       } catch (e) {
         debugPrint("Error publishing event: $e");
         debugPrint(relay.url);
+      }
+    }
+  }
+
+  Future<void> updateMetadata() async {
+    for (UserProfile profile in userProfiles) {
+      List<dynamic> metadataEvents = [];
+      var pubhex = profile.pubhex;
+      Request requestWithFilter = Request(pubhex.substring(0, 10), [
+        Filter(
+          kinds: [0],
+          limit: 3,
+          authors: [pubhex],
+        )
+      ]);
+      for (Relay relay in relays) {
+        try {
+          WebSocket webSocket = await WebSocket.connect(relay.url);
+          webSocket.add(requestWithFilter.serialize());
+          await Future.delayed(Duration(seconds: 1));
+          webSocket.listen((event) {
+            var jsonEvent = jsonDecode(event);
+            if (jsonEvent[0] == "EVENT") metadataEvents.add(jsonEvent[2]);
+          });
+          await webSocket.close();
+        } catch (e) {
+          debugPrint("Error getting metadata: $e");
+        }
+      }
+      if (metadataEvents.isNotEmpty) {
+        // extract metadata from event(s)
+        var listOfMetadata = metadataEvents.map((event) {
+          var metadata = jsonDecode(event['content']);
+          return NpubMetadata(
+            name: metadata['name'],
+            picture: metadata['picture'],
+            createdAt: event['created_at'] ?? 0,
+          );
+        }).toList();
+
+        // sort by the most recent event
+        listOfMetadata.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        profile.setNpubMetadata(listOfMetadata.first);
       }
     }
   }

@@ -15,8 +15,9 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-          const Image(image: AssetImage("assets/wavlake-icon-256.png")),
-          Text("Wavlake Signer App"),
+          const Image(
+              height: 200, image: AssetImage("assets/wavlake-icon-512.png")),
+          const Text("Wavlake Signer App"),
           Padding(
             padding: const EdgeInsets.all(40.0),
             child: ElevatedButton(
@@ -24,7 +25,7 @@ class WelcomeScreen extends StatelessWidget {
               child: const Text("Start"),
             ),
           ),
-          Text("Sign and publish nostr events"),
+          const Text("Sign and publish nostr events"),
         ]));
   }
 }

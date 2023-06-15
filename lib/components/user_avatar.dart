@@ -17,9 +17,9 @@ class UserAvatar extends StatelessWidget {
         SizedBox(
             width: size,
             height: size,
-            child: profile.profileUrl == null
+            child: profile.npubMetadata == null
                 ? Image(image: AssetImage(profile.defaultProfileUrl))
-                : Image.network(profile.profileUrl!)),
+                : Image.network(profile.npubMetadata!.picture)),
       ],
     );
   }
