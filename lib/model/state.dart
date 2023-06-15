@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:nostr_tools/nostr_tools.dart';
 import 'package:nostr/nostr.dart' as nostr;
@@ -89,10 +91,18 @@ class AppState with ChangeNotifier {
   /// A getter that transforms the scannedEvent into a string
   String get prettyEventString {
     if (scannedEvent == null) return "Scan an event...";
+    String id = scannedEvent!.id;
+    String createdAt = scannedEvent!.createdAt.toString();
+    String kind = scannedEvent!.kind.toString();
+    String tags = scannedEvent!.tags.toString();
+    String content = scannedEvent!.content.toString();
+    String sig = scannedEvent!.sig;
+    String pubkey =
+        activeProfile == null ? "No active profile" : activeProfile!.npub;
 
     JsonEncoder encoder = const JsonEncoder.withIndent('  ');
     String prettyprint = encoder.convert(scannedEvent);
-    return prettyprint;
+    return "Content: $content \nKind: $kind \nTags: $tags \nPubkey: $pubkey";
   }
 
   /// A method that reads from local storage and initializes state

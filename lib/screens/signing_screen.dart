@@ -51,76 +51,84 @@ class SigningScreen extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Container(
-            decoration:
-                BoxDecoration(border: Border.all(color: WavlakeColors.purple)),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              // TODO - this column widget/sized box is causing an overflow error
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: MediaQuery.of(context).size.height * 0.4,
-                child: SingleChildScrollView(
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                        style: DefaultTextStyle.of(context).style,
-                        text: appState.prettyEventString),
-                  ),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 200,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                      style: DefaultTextStyle.of(context).style,
+                      text: appState.prettyEventString),
                 ),
               ),
             ),
           ),
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                appState.navigate(Screen.scanner);
-              },
-              child: const Row(
-                children: [
-                  Icon(Icons.qr_code_scanner),
-                  Text('Scan Event'),
-                ],
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  appState.navigate(Screen.scanner);
+                },
+                child: const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(right: 6.0),
+                      child: Icon(Icons.qr_code_scanner),
+                    ),
+                    Text('Scan Event'),
+                  ],
+                ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: handleSignEvent,
-              child: const Text('Sign & Publish'),
             ),
           ],
         ),
-        const Padding(
-          padding: EdgeInsets.only(top: 8.0),
-          child: Text(
-            "Active Relays",
-            style: TextStyle(
-                decoration: TextDecoration.underline,
-                fontWeight: FontWeight.bold),
+        if (appState.scannedEvent != null)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: handleSignEvent,
+                child: const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(right: 6.0),
+                      child: Icon(Icons.key),
+                    ),
+                    Text('Sign & Publish'),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ),
-        ...appState.relays.where((element) => element.isActive).map((relay) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                appState.successRelays.contains(relay)
-                    ? const Icon(
-                        Icons.check,
-                        color: WavlakeColors.mint,
-                      )
-                    : const Icon(
-                        Icons.close,
-                        color: WavlakeColors.red,
-                      ),
-                Text(relay.url),
-              ],
-            ),
-          );
-        }),
+
+        // ...appState.relays.where((element) => element.isActive).map((relay) {
+        //   return Padding(
+        //     padding: const EdgeInsets.all(8.0),
+        //     child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: [
+        //         appState.successRelays.contains(relay)
+        //             ? const Icon(
+        //                 Icons.check,
+        //                 color: WavlakeColors.mint,
+        //               )
+        //             : const Icon(
+        //                 Icons.close,
+        //                 color: WavlakeColors.red,
+        //               ),
+        //         Text(relay.url),
+        //       ],
+        //     ),
+        //   );
+        // }),
       ],
     );
   }
