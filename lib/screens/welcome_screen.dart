@@ -15,7 +15,7 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-          const Image(image: AssetImage("assets/wavlake.png")),
+          const Image(image: AssetImage("assets/wavlake-icon-256.png")),
           Text("Wavlake Signer App"),
           Padding(
             padding: const EdgeInsets.all(40.0),

@@ -26,7 +26,7 @@ class UserProfile {
   String npub;
   String label;
   String? profileUrl;
-  String defaultProfileUrl = "assets/wavlake.png";
+  String defaultProfileUrl = "assets/wavlake-icon-96.png";
   bool isActive;
 
   Map<String, dynamic> toJson() {

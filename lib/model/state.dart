@@ -116,11 +116,11 @@ class AppState with ChangeNotifier {
     }
 
     loadingText = "Checking for any stored keys...";
-    navigate(Screen.loading);
+    // navigate(Screen.loading);
     await loadSavedProfiles();
     await loadSavedRelays();
 
-    navigate(Screen.signing);
+    // navigate(Screen.signing);
   }
 
   /// A method to navigate to a new screen
