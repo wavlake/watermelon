@@ -56,23 +56,24 @@ class ProfileRow extends StatelessWidget {
                     profile: profile,
                   ),
                 ),
-                Text(profile.label),
+                Text(profile.npubMetadata?.name ?? profile.label),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(
-                    onPressed: () {
-                      closeProfilePicker();
-                      appState.setEditingProfile(profile);
-                      appState.navigate(Screen.editUserProfile);
-                    },
-                    child: const Icon(
-                      Icons.edit,
-                      color: WavlakeColors.mint,
-                      size: 20.0,
-                    )),
+                if (profile.npubMetadata?.name == null)
+                  TextButton(
+                      onPressed: () {
+                        closeProfilePicker();
+                        appState.setEditingProfile(profile);
+                        appState.navigate(Screen.editUserProfile);
+                      },
+                      child: const Icon(
+                        Icons.edit,
+                        color: WavlakeColors.mint,
+                        size: 20.0,
+                      )),
                 TextButton(
                     onPressed: () {
                       deleteProfileDialog(context, profile, closeProfilePicker);
