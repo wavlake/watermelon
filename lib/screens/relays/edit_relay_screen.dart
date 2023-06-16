@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watermelon/components/top_back_button.dart';
+import 'package:watermelon/screens/relays/url_input.dart';
 
 import '../../model/state.dart';
-import 'label_input.dart';
 
-class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+class EditRelayScreen extends StatelessWidget {
+  const EditRelayScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,21 +14,26 @@ class EditProfileScreen extends StatelessWidget {
 
     // profile list view
     return Form(
-      key: appState.editProfileForm,
+      key: appState.editRelayForm,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const TopBackButton(
-            title: "Edit Profile",
+            title: "Edit Relay",
           ),
           Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: LabelInput(appState: appState),
+                child: UrlInput(appState: appState),
               ),
               ElevatedButton(
-                  onPressed: appState.saveLabel, child: const Text("Save")),
+                  onPressed: () {
+                    if (appState.editRelayForm.currentState!.validate()) {
+                      appState.editRelay();
+                    }
+                  },
+                  child: const Text("Save")),
             ],
           ),
           // this is to force the widget above to be centered

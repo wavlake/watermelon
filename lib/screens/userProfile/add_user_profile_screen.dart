@@ -19,7 +19,7 @@ class AddUserProfileScreen extends StatelessWidget {
     var appState = context.watch<AppState>();
 
     return Form(
-        key: appState.formKey,
+        key: appState.addProfileForm,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -36,13 +36,9 @@ class AddUserProfileScreen extends StatelessWidget {
                   LabelInput(appState: appState),
                   ElevatedButton(
                     onPressed: () {
-                      if (appState.formKey.currentState!.validate()) {
+                      if (appState.addProfileForm.currentState!.validate()) {
                         closeProfilePicker();
                         appState.addNewProfile();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Invalid Key')),
-                        );
                       }
                     },
                     child: const Text('Login'),

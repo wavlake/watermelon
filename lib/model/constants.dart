@@ -8,13 +8,21 @@ enum Screen {
   signing,
   scanner,
   loading,
-  editUserProfile
+  editUserProfile,
+  editRelay,
+  addRelay,
 }
 
+/// deprecated keys
 const storageKeyPrivateHex = "privateHexKey";
 const storageKeyUserProfiles = "userPrivateProfiles";
+
+String wavlakeRelay = "wss://relay.wavlake.com";
+
 const secureNpubNsecMap = "npubNsecMap";
 const publicProfileInfo = "userProfiles";
+const publicRelayList = "relayList";
+const hasSeenWelcomeScreen = "hasSeenWelcomeScreen";
 
 const Map<Screen, bool> shouldShowProfileSwitchButton = {
   Screen.welcome: false,
@@ -23,6 +31,8 @@ const Map<Screen, bool> shouldShowProfileSwitchButton = {
   Screen.scanner: true,
   Screen.loading: false,
   Screen.editUserProfile: false,
+  Screen.addRelay: false,
+  Screen.editRelay: false,
 };
 
 // https://stackoverflow.com/questions/50081213/how-do-i-use-hexadecimal-color-strings-in-flutter
@@ -34,6 +44,7 @@ abstract class WavlakeColors {
   static const Color orange = Color(0xFFffb848);
   static const Color mint = Color(0xFF5bdeb1);
   static const Color black = Color(0xFF171817);
+  static const Color red = Color(0xFFff4949);
   // new color that isnt used in other apps
   static const Color lightBlack = Color(0xFF303230);
 }

@@ -19,7 +19,10 @@ class ProfileRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
+      child: GestureDetector(
+        // this makes the entire child row clickable
+        // default is set to deferToChild, which means only children widget taps are registered
+        behavior: HitTestBehavior.opaque,
         onTap: () => {
           closeProfilePicker(),
           appState.makeProfileActive(profile),
@@ -46,28 +49,35 @@ class ProfileRow extends StatelessWidget {
                           size: 20.0,
                         ),
                       ),
-                UserAvatar(
-                  size: 30,
-                  profile: profile,
+                Padding(
+                  padding: const EdgeInsets.only(left: 14, right: 14),
+                  child: UserAvatar(
+                    size: 30,
+                    profile: profile,
+                  ),
                 ),
-                Text(profile.label),
+                Text(profile.npubMetadata?.name ?? profile.label),
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                if (profile.npubMetadata?.name == null)
+                  TextButton(
+                      onPressed: () {
+                        closeProfilePicker();
+                        appState.setEditingProfile(profile);
+                        appState.navigate(Screen.editUserProfile);
+                      },
+                      child: const Icon(
+                        Icons.edit,
+                        color: WavlakeColors.mint,
+                        size: 20.0,
+                      )),
                 TextButton(
-                    onPressed: () => {
-                          appState.setEditingProfile(profile),
-                          appState.navigate(Screen.editUserProfile),
-                        },
-                    child: const Icon(
-                      Icons.edit,
-                      color: WavlakeColors.mint,
-                      size: 20.0,
-                    )),
-                TextButton(
-                    onPressed: () => deleteProfileDialog(
-                        context, profile, closeProfilePicker),
+                    onPressed: () {
+                      deleteProfileDialog(context, profile, closeProfilePicker);
+                    },
                     child: const Icon(
                       Icons.delete,
                       color: WavlakeColors.orange,

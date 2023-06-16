@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:get_storage/get_storage.dart';
-import '/screens/userProfile/add_user_profile_screen.dart';
+
+import 'screens/relays/add_relay_screen.dart';
 import 'screens/userProfile/edit_profile_screen.dart';
 import 'screens/userProfile/profile_picker.dart';
-import 'model/constants.dart';
+import 'screens/userProfile/add_user_profile_screen.dart';
+import 'screens/relays/edit_relay_screen.dart';
+import 'screens/relays/relay_picker.dart';
 import 'screens/signing_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'screens/loading_screen.dart';
+import 'model/constants.dart';
 import 'model/state.dart';
-import 'package:flutter/services.dart'; // For `SystemChrome`
 
 // https://dartling.dev/toggle-full-screen-mode-in-flutter#heading-types-of-full-screen-modes
 void enterFullScreen() {
@@ -106,16 +110,24 @@ class _MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<_MyHomePage> {
   bool showProfilePicker = false;
-
-  void closeProfilePicker() {
-    setState(() {
-      showProfilePicker = false;
-    });
-  }
+  bool showRelayPicker = false;
 
   void openProfilePicker() {
     setState(() {
       showProfilePicker = true;
+    });
+  }
+
+  void closeBothPickers() {
+    setState(() {
+      showProfilePicker = false;
+      showRelayPicker = false;
+    });
+  }
+
+  void openRelayPicker() {
+    setState(() {
+      showRelayPicker = true;
     });
   }
 
@@ -124,9 +136,6 @@ class _MyHomePageState extends State<_MyHomePage> {
     var colorScheme = Theme.of(context).colorScheme;
     var appState = context.watch<AppState>();
 
-    bool shouldShowProfilePicker = showProfilePicker &&
-        shouldShowProfileSwitchButton[appState.currentScreen]!;
-
     Widget page;
     switch (appState.currentScreen) {
       case Screen.welcome:
@@ -134,7 +143,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         break;
       case Screen.addUserProfile:
         page = AddUserProfileScreen(
-          closeProfilePicker: closeProfilePicker,
+          closeProfilePicker: closeBothPickers,
         );
         break;
       case Screen.signing:
@@ -149,14 +158,25 @@ class _MyHomePageState extends State<_MyHomePage> {
       case Screen.editUserProfile:
         page = const EditProfileScreen();
         break;
+      case Screen.addRelay:
+        page = AddRelayScreen(
+          closeRelayPicker: closeBothPickers,
+        );
+        break;
+      case Screen.editRelay:
+        page = const EditRelayScreen();
+        break;
       default:
         throw UnimplementedError('no widget for ${appState.currentScreen}');
     }
 
     return Scaffold(
+      // https://stackoverflow.com/questions/46551268/when-the-keyboard-appears-the-flutter-widgets-resize-how-to-prevent-this
+      resizeToAvoidBottomInset: false,
       backgroundColor: WavlakeColors.black,
       body: LayoutBuilder(
         builder: (context, constraints) {
+          // The stack widget lets us display the profile picker on top of the page widget
           return Stack(
             children: [
               // This is the main parent widget of each screen
@@ -175,26 +195,36 @@ class _MyHomePageState extends State<_MyHomePage> {
                           ? [
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 20.0),
-                                child: TextButton(
-                                    onPressed: () {
-                                      openProfilePicker();
-                                    },
-                                    child: const Text("Switch profile")),
-                              )
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    TextButton(
+                                        onPressed: () {
+                                          openProfilePicker();
+                                        },
+                                        child: const Text("Switch profile")),
+                                    TextButton(
+                                        onPressed: () {
+                                          openRelayPicker();
+                                        },
+                                        child: const Text("Relays"))
+                                  ],
+                                ),
+                              ),
                             ]
                           : [],
                     ],
                   ),
                 ),
               ),
-              // The stack widget lets us display the profile picker on top of the page widget
               // if showProfilePicker is true, we spread the contents of the array below "...[]"
-              if (shouldShowProfilePicker) ...[
+              if (showProfilePicker || showRelayPicker) ...[
                 // This is the dark overlay that covers the page when the profile picker is open
                 Opacity(
                   opacity: 0.4,
-                  child: InkWell(
-                    onTap: closeProfilePicker,
+                  child: GestureDetector(
+                    onTap: closeBothPickers,
                     child: Container(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
@@ -204,29 +234,57 @@ class _MyHomePageState extends State<_MyHomePage> {
                   ),
                 ),
                 // this is the profile picker shown at the bottom of the screen
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            color: WavlakeColors.lightBlack,
-                            border: Border(
-                                top: BorderSide(
-                                    color: colorScheme.secondary, width: 2.0))),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: ProfilePicker(
-                            closeProfilePicker: closeProfilePicker,
+                if (showProfilePicker)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              color: WavlakeColors.lightBlack,
+                              border: Border(
+                                  top: BorderSide(
+                                      color: colorScheme.secondary,
+                                      width: 2.0))),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: ProfilePicker(
+                              closeProfilePicker: closeBothPickers,
+                            ),
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
+                if (showRelayPicker)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              color: WavlakeColors.lightBlack,
+                              border: Border(
+                                  top: BorderSide(
+                                      color: colorScheme.secondary,
+                                      width: 2.0))),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: RelayPicker(
+                              closeRelayPicker: closeBothPickers,
+                              uiRelays: appState.relays,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
               ],
             ],
           );

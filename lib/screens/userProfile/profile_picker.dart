@@ -22,7 +22,7 @@ class ProfilePicker extends StatelessWidget {
           children: [
             const Padding(
               padding: EdgeInsets.only(bottom: 15.0, top: 15.0),
-              child: Text("Select Account"),
+              child: Text("Switch profile"),
             ),
             ...appState.userProfiles.isEmpty
                 ? [const Text("Please add an account...")]
@@ -37,6 +37,7 @@ class ProfilePicker extends StatelessWidget {
                   onPressed: () {
                     appState.labelController.clear();
                     appState.nsecController.clear();
+                    closeProfilePicker();
                     appState.navigate(Screen.addUserProfile);
                   },
                   child: const Text("Add New Account")),

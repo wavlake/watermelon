@@ -15,14 +15,17 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text("Welcome to wavlake"),
+          const Image(
+              height: 200, image: AssetImage("assets/wavlake-icon-512.png")),
+          const Text("Wavlake Signer App"),
+          Padding(
+            padding: const EdgeInsets.all(40.0),
+            child: ElevatedButton(
+              onPressed: () => appState.navigate(Screen.signing),
+              child: const Text("Start"),
+            ),
           ),
-          ElevatedButton(
-            onPressed: () => appState.navigate(Screen.addUserProfile),
-            child: const Text("Add an account"),
-          ),
+          const Text("Sign and publish nostr events"),
         ]));
   }
 }
