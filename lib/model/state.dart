@@ -55,10 +55,18 @@ class AppState with ChangeNotifier {
   UserProfile? editingProfile;
   Relay? editingRelay;
   List<Relay> relays = [];
+  bool publishLoading = false;
+  List<Relay> successRelays = [];
 
   void setEditingProfile(UserProfile profile) {
     editingProfile = profile;
     labelController.text = profile.label;
+  }
+
+  Future<String> getEditingProfileNsec() async {
+    var privateKeyMap = await _readSecretKeyMap();
+    var nsecKey = privateKeyMap[editingProfile!.npub];
+    return nsecKey!;
   }
 
   void setEditingRelay(Relay relay) {
@@ -416,11 +424,11 @@ class AppState with ChangeNotifier {
     }
   }
 
-  List<Relay> successRelays = [];
-
   Future<void> publishEvent(nostr.Event event) async {
-    successRelays = [];
+    publishLoading = true;
+    notifyListeners();
 
+    successRelays = [];
     List<Relay> activeRelays =
         relays.where((element) => element.isActive).toList();
 
@@ -432,11 +440,14 @@ class AppState with ChangeNotifier {
         // and maybe keep it open longer
         await webSocket.close();
         successRelays.add(relay);
+        notifyListeners();
       } catch (e) {
         debugPrint("Error publishing event: $e");
         debugPrint(relay.url);
       }
     }
+    publishLoading = false;
+    notifyListeners();
   }
 
   Future<void> updateMetadata() async {

@@ -12,6 +12,9 @@ class SigningScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
+    var successRelayCount = appState.successRelays.length.toString();
+    var activeRelays =
+        appState.relays.where((element) => element.isActive).length.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
@@ -24,32 +27,50 @@ class SigningScreen extends StatelessWidget {
             EventPreview(appState: appState),
             ScanButton(appState: appState),
             if (appState.scannedEvent != null) SignButton(appState: appState),
+            if (appState.publishLoading)
+              ProgressIndicator(
+                  successRelayCount: successRelayCount,
+                  activeRelays: activeRelays),
           ],
         ),
         const SizedBox(
           height: 10,
         )
-        // ...appState.relays.where((element) => element.isActive).map((relay) {
-        //   return Padding(
-        //     padding: const EdgeInsets.all(8.0),
-        //     child: Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: [
-        //         appState.successRelays.contains(relay)
-        //             ? const Icon(
-        //                 Icons.check,
-        //                 color: WavlakeColors.mint,
-        //               )
-        //             : const Icon(
-        //                 Icons.close,
-        //                 color: WavlakeColors.red,
-        //               ),
-        //         Text(relay.url),
-        //       ],
-        //     ),
-        //   );
-        // }),
       ],
+    );
+  }
+}
+
+class ProgressIndicator extends StatelessWidget {
+  const ProgressIndicator({
+    super.key,
+    required this.successRelayCount,
+    required this.activeRelays,
+  });
+
+  final String successRelayCount;
+  final String activeRelays;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: SizedBox(
+                width: 20,
+                height: 20,
+                child: Center(
+                    child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ))),
+          ),
+          Text("Publishing to $successRelayCount/$activeRelays relays..."),
+        ],
+      ),
     );
   }
 }
@@ -120,7 +141,7 @@ class SignButton extends StatelessWidget {
       // https://stackoverflow.com/questions/68871880/do-not-use-buildcontexts-across-async-gaps
       if (isSuccess && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event Signed')),
+          const SnackBar(content: Text('Event publishing complete')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

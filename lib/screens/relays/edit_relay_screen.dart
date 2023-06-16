@@ -38,7 +38,7 @@ class EditRelayScreen extends StatelessWidget {
           ),
           // this is to force the widget above to be centered
           const SizedBox(
-            height: 50,
+            height: 200,
           )
         ],
       ),
