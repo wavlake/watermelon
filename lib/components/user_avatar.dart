@@ -15,11 +15,14 @@ class UserAvatar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         SizedBox(
-            width: size,
-            height: size,
-            child: profile.npubMetadata == null
-                ? Image(image: AssetImage(profile.defaultProfileUrl))
-                : Image.network(profile.npubMetadata!.picture)),
+          width: size,
+          height: size,
+          child: CircleAvatar(
+              backgroundImage: AssetImage(profile.defaultProfileUrl),
+              foregroundImage: profile.npubMetadata?.picture == null
+                  ? null
+                  : NetworkImage(profile.npubMetadata!.picture)),
+        ),
       ],
     );
   }
