@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watermelon/model/constants.dart';
 import 'package:watermelon/model/user_profile.dart';
 import '../model/state.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,8 @@ class UserAvatar extends StatelessWidget {
           width: size,
           height: size,
           child: CircleAvatar(
+              backgroundColor: WavlakeColors.lightBlack,
+              foregroundColor: WavlakeColors.lightBlack,
               backgroundImage: AssetImage(profile.defaultProfileUrl),
               foregroundImage: profile.npubMetadata?.picture == null
                   ? null
