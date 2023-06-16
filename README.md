@@ -28,6 +28,7 @@ pod install
 
 ## iOS build
 https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases
+https://docs.flutter.dev/deployment/ios
 
 1. Open Xcode and select the project
 1. Create an archive (Product > Archive)
